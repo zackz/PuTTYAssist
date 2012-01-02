@@ -7,7 +7,7 @@ set OUT=PuTTYAssist-%VER:~1,-1%.exe
 
 set REG="HKEY_LOCAL_MACHINE\SOFTWARE\AutoIt v3\AutoIt"
 set REG64="HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\AutoIt v3\AutoIt"
-reg query %REG% 1>nul 2>1
+reg query %REG% 1>nul 2>&1
 if errorlevel 1 set REG=%REG64%
 for /f "tokens=1,2,*" %%i in ('reg query %REG% /v InstallDir') do (
 	if /i InstallDir equ %%i set INSTALLDIR=%%k
