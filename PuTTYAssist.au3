@@ -25,7 +25,7 @@ https://github.com/zackz/PuTTYAssist
 #Include <GuiTreeView.au3>
 
 Global Const $NAME = "PuTTY Assist"
-Global Const $VERSION = "0.5.7"
+Global Const $VERSION = "0.5.8"
 Global Const $MAIN_TITLE = $NAME & " " & $VERSION
 Global Const $PAGEURL = "https://github.com/zackz/PuTTYAssist"
 Global Const $PATH_INI = "PuTTYAssist.ini"
@@ -329,7 +329,7 @@ Func MainDlg()
 	MgrGUIShow()
 	MgrRefresh()
 	GUISetState(@SW_SHOW, $g_hGUI)
-	MgrSwitchTo(0)
+	MgrSwitchToCurrent()
 
 	dbg("Main loop start...")
 	While 1
@@ -968,7 +968,11 @@ EndFunc
 
 Func MgrSwitchToCurrent()
 	Local $index = MgrGetCurrent()
-	If $index >= 0 Then MgrSwitchTo($index)
+	If $index >= 0 Then
+		MgrSwitchTo($index)
+	Else
+		HotKey_NewPutty_Global()
+	EndIf
 EndFunc
 
 Func MgrSwitchTo($index)
