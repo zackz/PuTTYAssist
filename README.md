@@ -66,5 +66,7 @@ Todos
 -----
 
 * Some about cmd.exe, ctrl+p/n/v...
-* Same about python/msysgit/cygwin/adb?
+* Some about python/msysgit/cygwin/adb?
+* Quick calling pscp
+* Write a wiki about PuTTY tips
 
