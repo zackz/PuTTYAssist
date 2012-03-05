@@ -23,6 +23,8 @@ How To Use
 
 Run PuTTYAssist.exe and open some PuTTYs. Use ALT+1/ALT+2... to switch. Use ALT+F1 to open new PuTTY...
 
+...
+
 After first run, a configure file - PuTTYAssist.ini was auto generated in same directory.
 Edit it with you favorites shortcuts and have fun.
 
@@ -68,5 +70,5 @@ Todos
 * Some about cmd.exe, ctrl+p/n/v...
 * Some about python/msysgit/cygwin/adb?
 * Quick calling pscp
-* Write a wiki about PuTTY tips
+* Write a wiki about PuTTY tips - [PuTTY Tips](https://github.com/zackz/PuTTYAssist/wiki/PuTTY-Tips)
 
