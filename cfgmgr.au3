@@ -110,15 +110,15 @@ Func CFGWriteBack($ini, $section)
 	IniWriteSection($ini, $section, $cfg_avCFG)
 EndFunc
 
-Func CFGNeedWriteBack($delay = 3000)
+Func CFGNeedWriteBack($delay=3000)
 	If $cfg_timeLatestSet = 0 Then Return False
 	; Wait a while for another CFGSet
 	Return _Timer_Diff($cfg_timeLatestSet) > $delay
 EndFunc
 
-Func CFGCachedWriteBack($cache=True)
+Func CFGCachedWriteBack($cache=True, $delay=3000)
 	If $cache Then
-		If CFGNeedWriteBack() Then
+		If CFGNeedWriteBack($delay) Then
 			CFGWriteBack($cfg_ini, $cfg_section)
 		EndIf
 	Else
