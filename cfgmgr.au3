@@ -38,6 +38,7 @@ v2
 	And save $ini/$section when calling CFGInitData.
 v1
 	Basic functions extracted from PuTTYAssist
+
 #comments-end
 
 #include-once
@@ -110,7 +111,7 @@ Func CFGWriteBack($ini, $section)
 	IniWriteSection($ini, $section, $cfg_avCFG)
 EndFunc
 
-Func CFGNeedWriteBack($delay=3000)
+Func CFGNeedWriteBack($delay)
 	If $cfg_timeLatestSet = 0 Then Return False
 	; Wait a while for another CFGSet
 	Return _Timer_Diff($cfg_timeLatestSet) > $delay
