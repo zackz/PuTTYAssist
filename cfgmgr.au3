@@ -29,23 +29,31 @@ Access:
 		CFGSetDefault($CFGKEY_WIDTH, 600)
 
 Write data back to ini:
-	; When idle or before exit
-	If CFGNeedWriteBack() Then
-		CFGWriteBack($PATH_INI, $SECTION_NAME)
-	EndIf
+	CFGCachedWriteBack()       ; When idle
+	CFGCachedWriteBack(False)  ; Or before exit
 
+History:
+v2
+	Add CFGCachedWriteBack() encapsulated CFGNeedWriteBack and CFGWriteBack.
+	And save $ini/$section when calling CFGInitData.
+v1
+	Basic functions extracted from PuTTYAssist
 #comments-end
 
 #include-once
 
 Global $cfg_timeLatestSet = 0
 Global $cfg_avCFG[1][2] = [[0]]
+Global $cfg_ini
+Global $cfg_section
 
 Func CFGInitData($ini, $section)
 	Local $av = IniReadSection($ini, $section)
 	If UBound($av) > 0 Then
 		$cfg_avCFG = $av
 	EndIf
+	$cfg_ini = $ini
+	$cfg_section = $section
 EndFunc
 
 Func CFGKeyIndex($key)
@@ -108,3 +116,13 @@ Func CFGNeedWriteBack($delay = 3000)
 	Return _Timer_Diff($cfg_timeLatestSet) > $delay
 EndFunc
 
+Func CFGCachedWriteBack($cache=True)
+	If $cache Then
+		If CFGNeedWriteBack() Then
+			CFGWriteBack($cfg_ini, $cfg_section)
+		EndIf
+	Else
+		; Write back immediately
+		CFGWriteBack($cfg_ini, $cfg_section)
+	EndIf
+EndFunc

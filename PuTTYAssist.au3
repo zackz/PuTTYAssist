@@ -6,33 +6,33 @@ https://github.com/zackz/PuTTYAssist
 #ce ----------------------------------------------------------------------------
 
 #include <Math.au3>
-#Include <Misc.au3>
+#include <Misc.au3>
 #include <Array.au3>
 #include <Process.au3>
 #include <WinAPI.au3>
 #include <Timers.au3>
-#Include <Clipboard.au3>
+#include <Clipboard.au3>
 #include <Constants.au3>
 #include <GUIConstantsEx.au3>
 #include <WindowsConstants.au3>
 #include <ColorConstants.au3>
-#Include <GuiImageList.au3>
-#Include <GuiButton.au3>
+#include <GuiImageList.au3>
+#include <GuiButton.au3>
 #include <GuiEdit.au3>
 #include <GuiListView.au3>
 #include <ListViewConstants.au3>
 #include <GUIListBox.au3>
-#Include <GuiTreeView.au3>
+#include <GuiTreeView.au3>
+#include <cfgmgr.au3>
 
 Global Const $NAME = "PuTTY Assist"
-Global Const $VERSION = "0.5.8"
+Global Const $VERSION = "0.5.9"
 Global Const $MAIN_TITLE = $NAME & " " & $VERSION
 Global Const $PAGEURL = "https://github.com/zackz/PuTTYAssist"
 Global Const $PATH_INI = "PuTTYAssist.ini"
 Global Const $SECTION_NAME = "PROPERTIES"
 Global Const $TITLE_PUTTYCONFIGBOX = "[CLASS:PuTTYConfigBox]"
 Global Const $ASSIST_DEFAULT_HEIGHT = 100
-Global Const $DEBUG_OUTPUT_BITS = 0 ; 0: no output, 1: console, 2: OutputDebugString
 
 Global Const $CFGKEY_WIDTH = "WIDTH"
 Global Const $CFGKEY_POS_X = "POS_X"
@@ -42,6 +42,7 @@ Global Const $CFGKEY_NOTEPADPATH = "NOTEPADPATH"
 Global Const $CFGKEY_AUTOHIDE = "AUTOHIDE"
 Global Const $CFGKEY_AUTOMAXIMIZE = "AUTOMAXIMIZE"
 Global Const $CFGKEY_REFRESHTIME = "REFRESHTIME"
+Global Const $CFGKEY_DEBUG_BITS = "DEBUG_BITS"
 
 Global $g_hGUI
 Global $g_hListView
@@ -62,10 +63,10 @@ Global $g_bSwitching = False
 Global $g_bManuallyHideGUI = False
 Global $g_iSwitch_AfterRefreshing = -1
 Global $g_HideTaskbar_AfterRefreshing = 0
-Global $g_WriteBackCFG_AfterRefreshing = 0
 Global $g_avCFG[1][2] = [[0]]
 Global $g_avData[1]
 Global $g_avRecentQueue[1]
+Global $g_bitsDebugOutput = 0 ; 0: no output, 1: console, 2: OutputDebugString
 
 main()
 
@@ -84,7 +85,7 @@ Func main()
 	Opt("WinWaitDelay", 0)
 	Opt("TrayMenuMode", 1)
 	Opt("TrayOnEventMode", 1)
-	If $DEBUG_OUTPUT_BITS <> 0 Then
+	If $g_bitsDebugOutput <> 0 Then
 		AutoItSetOption ("TrayIconDebug", 1)
 	EndIf
 
@@ -98,14 +99,14 @@ Func main()
 	InitTray()
 	MainDlg()
 
+	; Write back cfg
+	CFGCachedWriteBack(False)
+
 	dbg("Leaving...")
 EndFunc
 
 Func InitCFG()
-	Local $av = IniReadSection($PATH_INI, $SECTION_NAME)
-	If UBound($av) > 0 Then
-		$g_avCFG = $av
-	EndIf
+	CFGInitData($PATH_INI, $SECTION_NAME)
 	CFGSetDefault($CFGKEY_WIDTH,         280)
 	CFGSetDefault($CFGKEY_POS_X,         (@DesktopWidth - CFGGetInt($CFGKEY_WIDTH) - 30))
 	CFGSetDefault($CFGKEY_POS_Y,         50)
@@ -114,63 +115,9 @@ Func InitCFG()
 	CFGSetDefault($CFGKEY_AUTOHIDE,      1) ; Auto hide other PuTTY window's taskbar
 	CFGSetDefault($CFGKEY_AUTOMAXIMIZE,  1) ; Auto maximize NEW PuTTY window
 	CFGSetDefault($CFGKEY_REFRESHTIME,   150)
+	CFGSetDefault($CFGKEY_DEBUG_BITS,    0)
 	CFGSetDefault("HOTKEY_NOTES",        "ALT[!], SHIFT[+], CTRL[^], WINKEY[#], Details in http://www.autoitscript.com/autoit3/docs/functions/Send.htm")
-EndFunc
-
-Func CFGKeyIndex($key)
-	For $i = 1 To $g_avCFG[0][0]
-		; Case insensitive
-		If Not($key <> $g_avCFG[$i][0]) Then Return $i
-	Next
-	Return -1
-EndFunc
-
-Func CFGGet($key)
-	Local $index = CFGKeyIndex($key)
-	If $index >= 0 Then
-		Return $g_avCFG[$index][1]
-	Else
-		dbg("!!!")
-		Return 0
-	EndIf
-EndFunc
-
-Func CFGGetInt($key)
-	Return Int(CFGGet($key))
-EndFunc
-
-Func CFGGet2($key, $defaultvalue)
-	CFGSetDefault($key, $defaultvalue)
-	Return CFGGet($key)
-EndFunc
-
-Func CFGSetDefault($key, $defaultvalue)
-	If CFGKeyIndex($key) < 0 Then
-		CFGSet($key, $defaultvalue)
-	EndIf
-EndFunc
-
-Func CFGSet($key, $value)
-	Local $index = CFGKeyIndex($key)
-	If $index < 0 Then
-		; New key
-		$index = $g_avCFG[0][0] + 1
-		ReDim $g_avCFG[$index + 1][2]
-		$g_avCFG[0][0] = $index
-		$g_avCFG[$index][0] = $key
-	ElseIf $value = $g_avCFG[$index][1] Then
-		; Not changed
-		Return
-	EndIf
-	$g_avCFG[$index][1] = $value
-	; CFG changed, write back in MgrRefresh()
-	$g_WriteBackCFG_AfterRefreshing = _Timer_Init()
-EndFunc
-
-Func CFGWriteBack()
-	Local $t = _Timer_Init()
-	IniWriteSection($PATH_INI, $SECTION_NAME, $g_avCFG)
-	dbg("CFGWriteBack", _Timer_Diff($t))
+	$g_bitsDebugOutput = CFGGetInt($CFGKEY_DEBUG_BITS)
 EndFunc
 
 Func InitHotKey()
@@ -193,49 +140,49 @@ Func InitHotKey()
 #comments-end
 
 	; Show/Hide assist window.
-	HotKeySet(CFGGet2("HotKey_GUI_Global",              "^`"),         "HotKey_GUI_Global")
+	HotKeySet(CFGSetDefault("HotKey_GUI_Global",              "^`"),         "HotKey_GUI_Global")
 	; Show PuTTY's config dialog and focus on session list.
 	; Tips: Make stored session names with different initial letters, press the letter to quickly focus on session.
-	HotKeySet(CFGGet2("HotKey_NewPutty_Global",         "!{F1}"),      "HotKey_NewPutty_Global")
+	HotKeySet(CFGSetDefault("HotKey_NewPutty_Global",         "!{F1}"),      "HotKey_NewPutty_Global")
 
-	HotKeySet(CFGGet2("HotKey_SwitchToMost",            "^{TAB}"),     "HotKey_SwitchToMost")
+	HotKeySet(CFGSetDefault("HotKey_SwitchToMost",            "^{TAB}"),     "HotKey_SwitchToMost")
 	; Recent queue is not fully used. "Switch to last one" just works well.
 ;~ 	HotKeySet("^+{TAB}",     "HotKey_SwitchToLeast")
-	HotKeySet(CFGGet2("HotKey_SwitchToNext",            "^+j"),        "HotKey_SwitchToNext") ; "^+{DOWN}"
-	HotKeySet(CFGGet2("HotKey_SwitchToPrev",            "^+k"),        "HotKey_SwitchToPrev") ; "^+{UP}"
-	HotKeySet(CFGGet2("HotKey_Switch_H",                "^+h"),        "HotKey_Switch_H")
-	HotKeySet(CFGGet2("HotKey_Switch_M",                "^+m"),        "HotKey_Switch_M")
-	HotKeySet(CFGGet2("HotKey_Switch_L",                "^+l"),        "HotKey_Switch_L")
+	HotKeySet(CFGSetDefault("HotKey_SwitchToNext",            "^+j"),        "HotKey_SwitchToNext") ; "^+{DOWN}"
+	HotKeySet(CFGSetDefault("HotKey_SwitchToPrev",            "^+k"),        "HotKey_SwitchToPrev") ; "^+{UP}"
+	HotKeySet(CFGSetDefault("HotKey_Switch_H",                "^+h"),        "HotKey_Switch_H")
+	HotKeySet(CFGSetDefault("HotKey_Switch_M",                "^+m"),        "HotKey_Switch_M")
+	HotKeySet(CFGSetDefault("HotKey_Switch_L",                "^+l"),        "HotKey_Switch_L")
 
-	HotKeySet(CFGGet2("HotKey_DuplicateSession",        "^+t"),        "HotKey_DuplicateSession")
-	HotKeySet(CFGGet2("HotKey_Copy",                    "^+c"),        "HotKey_Copy")
-	HotKeySet(CFGGet2("HotKey_Paste",                   "^v"),         "HotKey_Paste")
-	HotKeySet(CFGGet2("HotKey_Appskey",                 "{APPSKEY}"),  "HotKey_Appskey")
-	HotKeySet(CFGGet2("HotKey_BG_R",                    "!{F9}"),      "HotKey_BG_R")
-	HotKeySet(CFGGet2("HotKey_BG_G",                    "!{F10}"),     "HotKey_BG_G")
-	HotKeySet(CFGGet2("HotKey_BG_B",                    "!{F11}"),     "HotKey_BG_B")
-	HotKeySet(CFGGet2("HotKey_BG_Clear",                "!{F12}"),     "HotKey_BG_Clear")
+	HotKeySet(CFGSetDefault("HotKey_DuplicateSession",        "^+t"),        "HotKey_DuplicateSession")
+	HotKeySet(CFGSetDefault("HotKey_Copy",                    "^+c"),        "HotKey_Copy")
+	HotKeySet(CFGSetDefault("HotKey_Paste",                   "^v"),         "HotKey_Paste")
+	HotKeySet(CFGSetDefault("HotKey_Appskey",                 "{APPSKEY}"),  "HotKey_Appskey")
+	HotKeySet(CFGSetDefault("HotKey_BG_R",                    "!{F9}"),      "HotKey_BG_R")
+	HotKeySet(CFGSetDefault("HotKey_BG_G",                    "!{F10}"),     "HotKey_BG_G")
+	HotKeySet(CFGSetDefault("HotKey_BG_B",                    "!{F11}"),     "HotKey_BG_B")
+	HotKeySet(CFGSetDefault("HotKey_BG_Clear",                "!{F12}"),     "HotKey_BG_Clear")
 
-	HotKeySet(CFGGet2("HotKey_SwitchTo_1",              "!1"),         "HotKey_SwitchTo")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_2",              "!2"),         "HotKey_SwitchTo")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_3",              "!3"),         "HotKey_SwitchTo")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_4",              "!4"),         "HotKey_SwitchTo")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_5",              "!5"),         "HotKey_SwitchTo")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_6",              "!6"),         "HotKey_SwitchTo")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_7",              "!7"),         "HotKey_SwitchTo")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_8",              "!8"),         "HotKey_SwitchTo")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_9",              "!9"),         "HotKey_SwitchTo")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_1",              "!1"),         "HotKey_SwitchTo")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_2",              "!2"),         "HotKey_SwitchTo")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_3",              "!3"),         "HotKey_SwitchTo")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_4",              "!4"),         "HotKey_SwitchTo")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_5",              "!5"),         "HotKey_SwitchTo")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_6",              "!6"),         "HotKey_SwitchTo")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_7",              "!7"),         "HotKey_SwitchTo")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_8",              "!8"),         "HotKey_SwitchTo")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_9",              "!9"),         "HotKey_SwitchTo")
 
-	HotKeySet(CFGGet2("HotKey_SwitchToLastOne_Global",  "!`"),         "HotKey_SwitchToLastOne_Global") ; "^+`"
-	HotKeySet(CFGGet2("HotKey_SwitchTo_Global_1",       "^+1"),        "HotKey_SwitchTo_Global")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_Global_2",       "^+2"),        "HotKey_SwitchTo_Global")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_Global_3",       "^+3"),        "HotKey_SwitchTo_Global")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_Global_4",       "^+4"),        "HotKey_SwitchTo_Global")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_Global_5",       "^+5"),        "HotKey_SwitchTo_Global")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_Global_6",       "^+6"),        "HotKey_SwitchTo_Global")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_Global_7",       "^+7"),        "HotKey_SwitchTo_Global")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_Global_8",       "^+8"),        "HotKey_SwitchTo_Global")
-	HotKeySet(CFGGet2("HotKey_SwitchTo_Global_9",       "^+9"),        "HotKey_SwitchTo_Global")
+	HotKeySet(CFGSetDefault("HotKey_SwitchToLastOne_Global",  "!`"),         "HotKey_SwitchToLastOne_Global") ; "^+`"
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_1",       "^+1"),        "HotKey_SwitchTo_Global")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_2",       "^+2"),        "HotKey_SwitchTo_Global")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_3",       "^+3"),        "HotKey_SwitchTo_Global")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_4",       "^+4"),        "HotKey_SwitchTo_Global")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_5",       "^+5"),        "HotKey_SwitchTo_Global")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_6",       "^+6"),        "HotKey_SwitchTo_Global")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_7",       "^+7"),        "HotKey_SwitchTo_Global")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_8",       "^+8"),        "HotKey_SwitchTo_Global")
+	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_9",       "^+9"),        "HotKey_SwitchTo_Global")
 EndFunc
 
 Func InitTray()
@@ -957,13 +904,7 @@ Func MgrRefresh()
 	EndIf
 
 	; Write back cfg
-	If $g_WriteBackCFG_AfterRefreshing <> 0 Then
-		Local $diff = _Timer_Diff($g_WriteBackCFG_AfterRefreshing)
-		If $diff > 3 * 1000 Then ; 3 seconds later after CFGSet
-			$g_WriteBackCFG_AfterRefreshing = 0
-			CFGWriteBack()
-		EndIf
-	EndIf
+	CFGCachedWriteBack()
 EndFunc
 
 Func MgrSwitchToCurrent()
@@ -1182,18 +1123,18 @@ Func ListUpdateNames($hList, $avData)
 EndFunc
 
 Func dbg($v1="", $v2="", $v3="", $v4="", $v5="")
-	If $DEBUG_OUTPUT_BITS = 0 Then Return
+	If $g_bitsDebugOutput = 0 Then Return
 	Local $msg = $v1 & " " & $v2 & " " & $v3 & " " & $v4 & " " & $v5 & @CRLF
-	If BitAND($DEBUG_OUTPUT_BITS, 1) Then
+	If BitAND($g_bitsDebugOutput, 1) Then
 		ConsoleWrite($msg)
 	EndIf
-	If BitAND($DEBUG_OUTPUT_BITS, 2) Then
+	If BitAND($g_bitsDebugOutput, 2) Then
 		DllCall("kernel32.dll", "none", "OutputDebugString", "str", $msg)
 	EndIf
 EndFunc
 
 Func DumpData($data)
-	If $DEBUG_OUTPUT_BITS = 0 Then Return
+	If $g_bitsDebugOutput = 0 Then Return
 	Local $len = UBound($data)
 	dbg("DATA len =", $len, "[" & _ArrayToString($data, ", ", 0, 5) & "]")
 EndFunc
