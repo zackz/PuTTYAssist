@@ -26,13 +26,14 @@ https://github.com/zackz/PuTTYAssist
 #include <cfgmgr.au3>
 
 Global Const $NAME = "PuTTY Assist"
-Global Const $VERSION = "0.5.9"
+Global Const $VERSION = "0.5.8"
 Global Const $MAIN_TITLE = $NAME & " " & $VERSION
 Global Const $PAGEURL = "https://github.com/zackz/PuTTYAssist"
 Global Const $PATH_INI = "PuTTYAssist.ini"
 Global Const $SECTION_NAME = "PROPERTIES"
 Global Const $TITLE_PUTTYCONFIGBOX = "[CLASS:PuTTYConfigBox]"
 Global Const $ASSIST_DEFAULT_HEIGHT = 100
+Global Const $MAX_KEY_SEQUENCE = 30
 
 Global Const $CFGKEY_WIDTH = "WIDTH"
 Global Const $CFGKEY_POS_X = "POS_X"
@@ -43,6 +44,9 @@ Global Const $CFGKEY_AUTOHIDE = "AUTOHIDE"
 Global Const $CFGKEY_AUTOMAXIMIZE = "AUTOMAXIMIZE"
 Global Const $CFGKEY_REFRESHTIME = "REFRESHTIME"
 Global Const $CFGKEY_DEBUG_BITS = "DEBUG_BITS"
+Global Const $CFGKEY_KEY_SEQENCE_PREFIX = "KEYSEQ"
+Global Const $CFGKEY_KEY_SEQENCE_SUFFIX_HOTKEY = "_HOTKEY"
+Global Const $CFGKEY_KEY_SEQENCE_SUFFIX_SEQUENCE = "_SEQENCE"
 
 Global $g_hGUI
 Global $g_hListView
@@ -80,7 +84,7 @@ Func main()
 	EndIf
 
 	dbg("Enter main...")
-	
+
 	Opt("MustDeclareVars", 1)
 	Opt("WinWaitDelay", 0)
 	Opt("TrayMenuMode", 1)
@@ -123,7 +127,7 @@ EndFunc
 Func InitHotKey()
 #comments-start
 	http://www.autoitscript.com/autoit3/docs/functions/Send.htm
-	
+
 	'!'
 	This tells AutoIt to send an ALT keystroke, therefore Send("This is text!a") would send the keys "This is text" and then press "ALT+a".
 	N.B. Some programs are very choosy about capital letters and ALT keys, i.e. "!A" is different to "!a". The first says ALT+SHIFT+A, the second is ALT+a. If in doubt, use lowercase!
@@ -183,6 +187,14 @@ Func InitHotKey()
 	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_7",       "^+7"),        "HotKey_SwitchTo_Global")
 	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_8",       "^+8"),        "HotKey_SwitchTo_Global")
 	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_9",       "^+9"),        "HotKey_SwitchTo_Global")
+
+	For $i = 1 To $MAX_KEY_SEQUENCE
+		Local $hotkey = CFGGet($CFGKEY_KEY_SEQENCE_PREFIX & $i & $CFGKEY_KEY_SEQENCE_SUFFIX_HOTKEY)
+		If $hotkey Then
+			HotKeySet($hotkey, "HotKey_KeySequence")
+		EndIf
+	Next
+
 EndFunc
 
 Func InitTray()
@@ -287,7 +299,7 @@ Func MainDlg()
 				; WinClose and WinKill isn't working. Use "$g_bLeaving" to determine whether to quit and ask before quiting.
 				; Opt("GUICloseOnESC", 0)
 				Local $bQuit = False
-				If $g_bLeaving Then 
+				If $g_bLeaving Then
 					$bQuit = True
 				Else
 					Local $ret = MsgBox(1, $NAME, "Close " & $NAME & "?")
@@ -489,8 +501,8 @@ Func WM_LBUTTONUP($hWndGUI, $MsgID, $wParam, $lParam)
 
 	Local $res = _GUICtrlListView_HitTest($g_hListView)
 	If $res[0] >= 0 Or $res[1] Then
-		; [0] - Zero based index of the item at the specified position, or -1 
-		; [1] - If True, position is in control's client window but not on an item 
+		; [0] - Zero based index of the item at the specified position, or -1
+		; [1] - If True, position is in control's client window but not on an item
 		$desc = _GUICtrlListView_GetNextItem($g_hListView)
 	EndIf
 	If $src < 0 Or $desc < 0 Or $src = $desc Then Return
@@ -688,6 +700,20 @@ EndFunc
 
 Func HotKey_BG_Clear()
 	HotKey_Func_SetBG(0, 0, 0, "HotKey_BG_Clear")
+EndFunc
+
+Func HotKey_KeySequence()
+	For $i = 1 To $MAX_KEY_SEQUENCE
+		Local $hotkey = CFGGet($CFGKEY_KEY_SEQENCE_PREFIX & $i & $CFGKEY_KEY_SEQENCE_SUFFIX_HOTKEY)
+		If @HotKeyPressed == $hotkey Then
+			Local $sequence = CFGGet($CFGKEY_KEY_SEQENCE_PREFIX & $i & $CFGKEY_KEY_SEQENCE_SUFFIX_SEQUENCE)
+			dbg("HotKey_KeySequence()", $hotkey, $sequence)
+			While _IsPressed("10") Or _IsPressed("11") Or _IsPressed("12")
+				Sleep(50)
+			WEnd
+			Send($sequence)
+		EndIf
+	Next
 EndFunc
 
 Func HotKey_Func_GUI($show)
