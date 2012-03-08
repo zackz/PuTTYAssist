@@ -53,110 +53,140 @@ and [more...](http://www.autoitscript.com/autoit3/docs/functions/Send.htm)
 
 Auto find all running PuTTY, hide them in taskbar, and maximize the window
 
-    AUTOHIDE=1
-    AUTOMAXIMIZE=1
+```ini
+AUTOHIDE=1
+AUTOMAXIMIZE=1
+```
 
 PuTTYAssist's windows position and width
 
-    WIDTH=280
-    POS_X=1370
-    POS_Y=50
+```ini
+WIDTH=280
+POS_X=1370
+POS_Y=50
+```
 
 Paste, `CTRL + V`
 
-    HotKey_Paste=^v
+```ini
+HotKey_Paste=^v
+```
 
 Copy all text to editor, `CTRL + SHIFT + C`
 
-    HotKey_Copy=^+c
-    NOTEPADPATH=Notepad.exe
+```ini
+HotKey_Copy=^+c
+NOTEPADPATH=Notepad.exe
+```
 
 Popup PuTTY session window, `ALT + F1`
 
-    HotKey_NewPutty_Global=!{F1}
-    PUTTYPATH=C:\putty\PUTTY.EXE
+```ini
+HotKey_NewPutty_Global=!{F1}
+PUTTYPATH=C:\putty\PUTTY.EXE
+```
 
 Duplicate session, `CTRL + SHIFT + T`
 
-    HotKey_DuplicateSession=^+t
+```ini
+HotKey_DuplicateSession=^+t
+```
 
 PuTTY context menu
 
-    HotKey_Appskey={APPSKEY}
+```ini
+HotKey_Appskey={APPSKEY}
+```
 
 Change background color, `CTRL + F9/F10/F11/F12`
 
-    HotKey_BG_R=!{F9}
-    HotKey_BG_G=!{F10}
-    HotKey_BG_B=!{F11}
-    HotKey_BG_Clear=!{F12}
+```ini
+HotKey_BG_R=!{F9}
+HotKey_BG_G=!{F10}
+HotKey_BG_B=!{F11}
+HotKey_BG_Clear=!{F12}
+```
 
 Show/hide PuTTYAssist window, ```CTRL + ` ```
 
-    HotKey_GUI_Global=^`
+```ini
+HotKey_GUI_Global=^`
+```
 
 Popup last PuTTY windows when focus is on anywhere, ```ALT + ` ```
 
-    HotKey_SwitchToLastOne_Global=!`
+```ini
+HotKey_SwitchToLastOne_Global=!`
+```
 
 Switch to last PuTTY windows. `CTRL + TAB`
 
-    HotKey_SwitchToMost=^{TAB}
+```ini
+HotKey_SwitchToMost=^{TAB}
+```
 
 Switch to ...
 
-    ; Next
-    HotKey_SwitchToNext=^+j
-    ; Last
-    HotKey_SwitchToPrev=^+k
-    ; First
-    HotKey_Switch_H=^+h
-    ; Middle
-    HotKey_Switch_M=^+m
-    ; Last
-    HotKey_Switch_L=^+l
+```ini
+; Next
+HotKey_SwitchToNext=^+j
+; Last
+HotKey_SwitchToPrev=^+k
+; First
+HotKey_Switch_H=^+h
+; Middle
+HotKey_Switch_M=^+m
+; Last
+HotKey_Switch_L=^+l
+```
 
 Switch to managed PuTTY windows when focus is on PuTTYAssist or PuTTY windos, `ALT + [N]`
 
-    HotKey_SwitchTo_1=!1
-    HotKey_SwitchTo_2=!2
-    HotKey_SwitchTo_3=!3
-    HotKey_SwitchTo_4=!4
-    HotKey_SwitchTo_5=!5
-    HotKey_SwitchTo_6=!6
-    HotKey_SwitchTo_7=!7
-    HotKey_SwitchTo_8=!8
-    HotKey_SwitchTo_9=!9
+```ini
+HotKey_SwitchTo_1=!1
+HotKey_SwitchTo_2=!2
+HotKey_SwitchTo_3=!3
+HotKey_SwitchTo_4=!4
+HotKey_SwitchTo_5=!5
+HotKey_SwitchTo_6=!6
+HotKey_SwitchTo_7=!7
+HotKey_SwitchTo_8=!8
+HotKey_SwitchTo_9=!9
+```
 
 Popup managed PuTTY windows when focus is **not** on PuTTYAssist or PuTTY windos, `CTRL + SHIFT + [N]`
 
-    HotKey_SwitchTo_Global_1=^+1
-    HotKey_SwitchTo_Global_2=^+2
-    HotKey_SwitchTo_Global_3=^+3
-    HotKey_SwitchTo_Global_4=^+4
-    HotKey_SwitchTo_Global_5=^+5
-    HotKey_SwitchTo_Global_6=^+6
-    HotKey_SwitchTo_Global_7=^+7
-    HotKey_SwitchTo_Global_8=^+8
-    HotKey_SwitchTo_Global_9=^+9
+```ini
+HotKey_SwitchTo_Global_1=^+1
+HotKey_SwitchTo_Global_2=^+2
+HotKey_SwitchTo_Global_3=^+3
+HotKey_SwitchTo_Global_4=^+4
+HotKey_SwitchTo_Global_5=^+5
+HotKey_SwitchTo_Global_6=^+6
+HotKey_SwitchTo_Global_7=^+7
+HotKey_SwitchTo_Global_8=^+8
+HotKey_SwitchTo_Global_9=^+9
+```
 
 Send key sequence to PuTTY window
 
-    ; HotKey is ALT + SHIFT + 1
-    ; Effect is clear screen and run ifconfig
-    KEYSEQ1_HOTKEY=!+1
-    KEYSEQ1_SEQUENCE=^lifconfig{ENTER}
-    
-    ; HotKey is ALT + SHIFT + 2
-    ; This key sequence is for vim which add two options: number and hlsearch
-    KEYSEQ2_HOTKEY=!+2
-    KEYSEQ2_SEQUENCE=:set number hlsearch{ENTER}
-    
-    ; HotKey is ALT + SHIFT + 3
-    ; This key sequence is for vim or less which highlight valid lines except comments.
-    ; Original sequence is "/^[^#^;].*". But "^" is shortcut for "CTRL", so replaced with "{^}"
-    KEYSEQ3_HOTKEY=!+3
-    KEYSEQ3_SEQUENCE=/{^}[{^}{#}{^};].*{ENTER}
+```ini
+; HotKey is ALT + SHIFT + 1
+; Effect is clear screen and run ifconfig
+KEYSEQ1_HOTKEY=!+1
+KEYSEQ1_SEQUENCE=^lifconfig{ENTER}
+
+; HotKey is ALT + SHIFT + 2
+; This key sequence is for vim which add two options: number and hlsearch
+KEYSEQ2_HOTKEY=!+2
+KEYSEQ2_SEQUENCE=:set number hlsearch{ENTER}
+
+; HotKey is ALT + SHIFT + 3
+; This key sequence is for vim or less which highlight valid lines except comments.
+; Original sequence is "/^[^#^;].*". But "^" is shortcut for "CTRL", so replaced with "{^}"
+KEYSEQ3_HOTKEY=!+3
+KEYSEQ3_SEQUENCE=/{^}[{^}{#}{^};].*{ENTER}
+```
 
 Tips
 ----
