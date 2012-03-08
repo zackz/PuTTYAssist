@@ -37,6 +37,10 @@ Features
 * Duplicate current session, `CTRL + SHIFT + T`
 * Popup PuTTY's context menu by keyboard
 * Change PuTTY background color, `CTRL + F9/F10/F11/F12`
+* Send key sequence to PuTTY window
+  * Customized key combination
+  * Extract environment and settings out of box
+  * Run simple script
 
 Settings in INI
 ---------------
@@ -44,7 +48,8 @@ Settings in INI
 After first run, a configure file - PuTTYAssist.ini was auto generated in same directory.
 Edit it with you favorites shortcuts. All config with prefix `HotKey_` is a key combination:
 `! is ALT`, `+ is SHIFT`, `^ is CTRL`, `# is WINKEY`, 
-and [more...](http://www.autoitscript.com/autoit3/docs/functions/Send.htm)
+and [more...](http://www.autoitscript.com/autoit3/docs/functions/Send.htm). And make sure to
+close PuTTYAssist before change ini.
 
 
 Auto find all running PuTTY, hide them in taskbar, and maximize the window
@@ -136,6 +141,24 @@ Popup managed PuTTY windows when focus is **not** on PuTTYAssist or PuTTY windos
     HotKey_SwitchTo_Global_8=^+8
     HotKey_SwitchTo_Global_9=^+9
 
+Send key sequent to PuTTY window
+
+    ; HotKey is ALT + SHIFT + 1
+    ; Effect is clear screen and run ifconfig
+    KEYSEQ1_HOTKEY=!+1
+    KEYSEQ1_SEQUENCE=^lifconfig{ENTER}
+    
+    ; HotKey is ALT + SHIFT + 2
+    ; This key sequence is for vim which add two options: number and hlsearch
+    KEYSEQ2_HOTKEY=!+2
+    KEYSEQ2_SEQUENCE=:set number hlsearch{ENTER}
+    
+    ; HotKey is ALT + SHIFT + 3
+    ; This key sequence is for vim or less which highlight valid lines except comments.
+    ; Original sequence is "/^[^#^;].*".  But "^" is shortcut for "CTRL", so replaced with "{^}"
+    KEYSEQ3_HOTKEY=!+3
+    KEYSEQ3_SEQUENCE=/{^}[{^}{#}{^};].*{ENTER}
+
 Tips
 ----
 
@@ -144,7 +167,7 @@ location 1/2/3 (ALT+1/ALT+2...)
 * Use `ALT + F1` to create new PuTTY session. After displayed the PuTTY Configuration windows, 
 focus was on Saved Sessions. So make stored session names with different initial letters, then 
 press the letter to quickly put focus on session.
-* PuTTYAssist a system tray
+* PuTTYAssist has a system tray
   * Reset assist dialog location
   * Hide assist dialog, same as ```CTRL + ` ```
 * [Some tips about PuTTY](https://github.com/zackz/PuTTYAssist/wiki/PuTTY-Tips)
