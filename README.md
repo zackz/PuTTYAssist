@@ -28,7 +28,7 @@ shortcut: `ALT + [N]` / `CTRL + TAB` / ```ALT + ` ```
 Features
 --------
 
-* Auto find all running PuTTY windows, hide in taskbar, and maximize the window
+* Automatically find all running PuTTY windows, hide in taskbar, and maximize the window
 * Use configurable shortcut to popup managed PuTTY windows, ```ALT + ` ```, `CTRL + TAB`, 
 `ALT + [N]`, `CTRL + SHIFT + [N]`, `ALT + SHIFT + J/K/H/M/L`
 * `CTRL + V` is available now
@@ -42,23 +42,23 @@ Features
   * Extract environment and settings out of box
   * Run simple script
 
-Settings in INI
----------------
+Settings
+--------
 
-After first run, a configure file - PuTTYAssist.ini was auto generated in same directory.
-Edit it with you favorites shortcuts. All config with prefix `HotKey_` is a key combination:
-`! is ALT`, `+ is SHIFT`, `^ is CTRL`, `# is WINKEY`, 
-and [more...](http://www.autoitscript.com/autoit3/docs/functions/Send.htm)
-(Make sure to close PuTTYAssist before changing ini.)
+After first run, a configure file - **PuTTYAssist.ini** was auto generated in same directory.
+All config with prefix `HotKey_` is a key combination: `! is ALT`, `+ is SHIFT`, `^ is CTRL`,
+`# is WINKEY`, and [more...](http://www.autoitscript.com/autoit3/docs/functions/Send.htm)
 
-Auto find all running PuTTY, hide them in taskbar, and maximize the window
+*(Make sure to close PuTTYAssist first before making any changes)*
+
+Hide PuTTY in taskbar, and maximize it automatically.
 
 ```ini
 AUTOHIDE=1
 AUTOMAXIMIZE=1
 ```
 
-PuTTYAssist's windows position and width
+Position and width of PuTTYAssist's window
 
 ```ini
 WIDTH=280
@@ -119,7 +119,7 @@ Popup last PuTTY windows when focus is on anywhere, ```ALT + ` ```
 HotKey_SwitchToLastOne_Global=!`
 ```
 
-Switch to last PuTTY windows. `CTRL + TAB`
+Switch to last PuTTY window, `CTRL + TAB`
 
 ```ini
 HotKey_SwitchToMost=^{TAB}
@@ -130,7 +130,7 @@ Switch to ...
 ```ini
 ; Next
 HotKey_SwitchToNext=^+j
-; Last
+; Previous
 HotKey_SwitchToPrev=^+k
 ; First
 HotKey_Switch_H=^+h
@@ -140,7 +140,7 @@ HotKey_Switch_M=^+m
 HotKey_Switch_L=^+l
 ```
 
-Switch to managed PuTTY windows when focus is on PuTTYAssist or PuTTY windos, `ALT + [N]`
+Switch to managed PuTTY window when focus is on PuTTYAssist or PuTTY windos, `ALT + [N]`
 
 ```ini
 HotKey_SwitchTo_1=!1
