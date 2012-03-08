@@ -18,31 +18,33 @@ Getting Started
 * If you installed [AutoIt(3.3.8)](http://www.autoitscript.com/site/autoit/downloads/)
   * Run PuTTYAssist.au3 directly
   * Or compile your own excutable file
-* Run PuTTYAssist.exe and open some PuTTYs
-  * Use ALT+1/ALT+2... to switch.
-  * Use ALT+F1 to open new PuTTY...
+* Run PuTTYAssist.exe and open some PuTTYs, and try some shortcut below
+  * Use `ALT + 1` / `ALT + 2` ... and `CTRL + TAB` to switch
+  * Use `ALT + F1` to open new PuTTY...
+  * Use ```ALT + ` ``` to show last PuTTY
+* Don't be scared by below text. It's still working well only use this three shortcut: 
+`ALT + [N]` / `CTRL + TAB` / ```ALT + ` ```
 
 Features
 --------
 
 * Auto find all running PuTTY windows, hide in taskbar, and maximize the window
-* Use configurable shortcut to popup managed PuTTY windows, ALT + \`, `CTRL + TAB`, `ALT + [N]`,
-`CTRL + SHIFT + [N]`, `ALT + SHIFT+J/K/H/M/L`
+* Use configurable shortcut to popup managed PuTTY windows, ```ALT + ` ```, `CTRL + TAB`, `ALT + [N]`,
+`CTRL + SHIFT + [N]`, `ALT + SHIFT + J/K/H/M/L`
 * `CTRL + V` is available now
 * Copy all text in PuTTY to text editor, convenient for copy, `CTRL + SHIFT + C`
-* Popup PuTTY session window and set focus to saved session list, `ALT + F1`
+* Create new PuTTY session, `ALT + F1`
 * Duplicate current session, `CTRL + SHIFT + T`
 * Popup PuTTY's context menu by keyboard
 * Change PuTTY background color, `CTRL + F9/F10/F11/F12`
-* Drag list items in PuTTYAssist to change sequence, put frequently used PuTTY to
-location 1/2/3 (ALT+1/ALT+2...)
 
 Settings in INI
 ---------------
 
 After first run, a configure file - PuTTYAssist.ini was auto generated in same directory.
 Edit it with you favorites shortcuts. All config with prefix `HotKey_` is a key combination:
-`! is ALT`, `+ is SHIFT`, `^ is CTRL`, `# is WINKEY`, and [more...](http://www.autoitscript.com/autoit3/docs/functions/Send.htm)
+`! is ALT`, `+ is SHIFT`, `^ is CTRL`, `# is WINKEY`, 
+and [more...](http://www.autoitscript.com/autoit3/docs/functions/Send.htm)
 
 
 Auto find all running PuTTY, hide them in taskbar, and maximize the window
@@ -85,7 +87,11 @@ Change background color, `CTRL + F9/F10/F11/F12`
     HotKey_BG_B=!{F11}
     HotKey_BG_Clear=!{F12}
 
-Popup last PuTTY windows when focus is on anywhere, ALT + \`
+Show/hide PuTTYAssist window, ```CTRL + ` ```
+
+    HotKey_GUI_Global=^`
+
+Popup last PuTTY windows when focus is on anywhere, ```ALT + ` ```
 
     HotKey_SwitchToLastOne_Global=!`
 
@@ -130,11 +136,16 @@ Popup managed PuTTY windows when focus is **not** on PuTTYAssist or PuTTY windos
     HotKey_SwitchTo_Global_8=^+8
     HotKey_SwitchTo_Global_9=^+9
 
-Todos
------
+Tips
+----
 
-* Some about cmd.exe, ctrl+p/n/v...
-* Some about python/msysgit/cygwin/adb?
-* Quick calling pscp
-* Write a wiki about PuTTY tips - [PuTTY Tips](https://github.com/zackz/PuTTYAssist/wiki/PuTTY-Tips)
+* Drag list items in PuTTYAssist to change sequence, put frequently used PuTTY to
+location 1/2/3 (ALT+1/ALT+2...)
+* Use `ALT + F1` to create new PuTTY session. After displayed the PuTTY Configuration windows, 
+focus was on Saved Sessions. So make stored session names with different initial letters, then 
+press the letter to quickly put focus on session.
+* PuTTYAssist a system tray
+  * Reset assist dialog location
+  * Hide assist dialog, same as ```CTRL + ` ```
+* [Some tips about PuTTY](https://github.com/zackz/PuTTYAssist/wiki/PuTTY-Tips)
 
