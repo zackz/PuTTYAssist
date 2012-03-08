@@ -48,9 +48,8 @@ Settings in INI
 After first run, a configure file - PuTTYAssist.ini was auto generated in same directory.
 Edit it with you favorites shortcuts. All config with prefix `HotKey_` is a key combination:
 `! is ALT`, `+ is SHIFT`, `^ is CTRL`, `# is WINKEY`, 
-and [more...](http://www.autoitscript.com/autoit3/docs/functions/Send.htm). And make sure to
-close PuTTYAssist before change ini.
-
+and [more...](http://www.autoitscript.com/autoit3/docs/functions/Send.htm)
+(Make sure to close PuTTYAssist before changing ini.)
 
 Auto find all running PuTTY, hide them in taskbar, and maximize the window
 
