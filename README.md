@@ -113,7 +113,7 @@ Show/hide PuTTYAssist window, ```CTRL + ` ```
 HotKey_GUI_Global=^`
 ```
 
-Popup last PuTTY windows when focus is on anywhere, ```ALT + ` ```
+Popup last PuTTY window when focus is on anywhere, ```ALT + ` ```
 
 ```ini
 HotKey_SwitchToLastOne_Global=!`
@@ -154,7 +154,7 @@ HotKey_SwitchTo_8=!8
 HotKey_SwitchTo_9=!9
 ```
 
-Popup managed PuTTY windows when focus is **not** on PuTTYAssist or PuTTY windos, `CTRL + SHIFT + [N]`
+Popup managed PuTTY window when focus is **not** on PuTTYAssist or PuTTY windos, `CTRL + SHIFT + [N]`
 
 ```ini
 HotKey_SwitchTo_Global_1=^+1
@@ -193,9 +193,9 @@ Tips
 
 * Drag list items in PuTTYAssist to change sequence, put frequently used PuTTY to
 location 1/2/3 (ALT+1/ALT+2...)
-* Use `ALT + F1` to create new PuTTY session. After displayed the PuTTY Configuration windows, 
-focus was on Saved Sessions. So make stored session names with different initial letters, then 
-press the letter to quickly put focus on session.
+* Use `ALT + F1` to create new PuTTY session. After displayed the PuTTY Configuration window, 
+focus was on Saved Sessions list. So make stored session names with different initial letters, 
+then press the letter to quickly locate it.
 * PuTTYAssist has a system tray
   * Reset assist dialog location
   * Hide assist dialog, same as ```CTRL + ` ```
