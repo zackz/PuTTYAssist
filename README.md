@@ -18,8 +18,9 @@ Getting Started
 * If you installed [AutoIt(3.3.8)](http://www.autoitscript.com/site/autoit/downloads/)
   * Run PuTTYAssist.au3 directly
   * Or compile your own excutable file
-* Run PuTTYAssist.exe and open some PuTTYs. Use ALT+1/ALT+2... to switch. Use ALT+F1
-to open new PuTTY...
+* Run PuTTYAssist.exe and open some PuTTYs
+  * Use ALT+1/ALT+2... to switch.
+  * Use ALT+F1 to open new PuTTY...
 
 Features
 --------
