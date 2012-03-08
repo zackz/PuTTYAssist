@@ -154,7 +154,7 @@ Send key sequence to PuTTY window
     
     ; HotKey is ALT + SHIFT + 3
     ; This key sequence is for vim or less which highlight valid lines except comments.
-    ; Original sequence is "/^[^#^;].*".  But "^" is shortcut for "CTRL", so replaced with "{^}"
+    ; Original sequence is "/^[^#^;].*". But "^" is shortcut for "CTRL", so replaced with "{^}"
     KEYSEQ3_HOTKEY=!+3
     KEYSEQ3_SEQUENCE=/{^}[{^}{#}{^};].*{ENTER}
 
