@@ -5,7 +5,7 @@ PuTTY Assist is auxiliary tools for [PuTTY](http://www.chiark.greenend.org.uk/~s
 based on [AutoIt](http://www.autoitscript.com/site/autoit/). Developed for people
 looking for extreme efficiency.
 
-* Easy to use, dozens of handy configurable hotkeys
+* Easy to use, dozens of handy customized hotkeys
 * Small and independent executable file
 * Easy to hack
   * Only about 1200 lines in single source file
@@ -22,15 +22,15 @@ Getting Started
   * Use `ALT + 1` / `ALT + 2` ... and `CTRL + TAB` to switch
   * Use `ALT + F1` to open new PuTTY...
   * Use ```ALT + ` ``` to show last PuTTY
-* Don't be scared by below text. It's still working well only use this three shortcut: 
-`ALT + [N]` / `CTRL + TAB` / ```ALT + ` ```
+* Don't be scared by below text. PuTTYAssist still works well only use this three
+shortcut: `ALT + [N]` / `CTRL + TAB` / ```ALT + ` ```
 
 Features
 --------
 
 * Auto find all running PuTTY windows, hide in taskbar, and maximize the window
-* Use configurable shortcut to popup managed PuTTY windows, ```ALT + ` ```, `CTRL + TAB`, `ALT + [N]`,
-`CTRL + SHIFT + [N]`, `ALT + SHIFT + J/K/H/M/L`
+* Use configurable shortcut to popup managed PuTTY windows, ```ALT + ` ```, `CTRL + TAB`, 
+`ALT + [N]`, `CTRL + SHIFT + [N]`, `ALT + SHIFT + J/K/H/M/L`
 * `CTRL + V` is available now
 * Copy all text in PuTTY to text editor, convenient for copy, `CTRL + SHIFT + C`
 * Create new PuTTY session, `ALT + F1`
@@ -140,7 +140,7 @@ Popup managed PuTTY windows when focus is **not** on PuTTYAssist or PuTTY windos
     HotKey_SwitchTo_Global_8=^+8
     HotKey_SwitchTo_Global_9=^+9
 
-Send key sequent to PuTTY window
+Send key sequence to PuTTY window
 
     ; HotKey is ALT + SHIFT + 1
     ; Effect is clear screen and run ifconfig
