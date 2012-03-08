@@ -44,9 +44,9 @@ Global Const $CFGKEY_AUTOHIDE = "AUTOHIDE"
 Global Const $CFGKEY_AUTOMAXIMIZE = "AUTOMAXIMIZE"
 Global Const $CFGKEY_REFRESHTIME = "REFRESHTIME"
 Global Const $CFGKEY_DEBUG_BITS = "DEBUG_BITS"
-Global Const $CFGKEY_KEY_SEQENCE_PREFIX = "KEYSEQ"
-Global Const $CFGKEY_KEY_SEQENCE_SUFFIX_HOTKEY = "_HOTKEY"
-Global Const $CFGKEY_KEY_SEQENCE_SUFFIX_SEQUENCE = "_SEQENCE"
+Global Const $CFGKEY_KEY_SEQUENCE_PREFIX = "KEYSEQ"
+Global Const $CFGKEY_KEY_SEQUENCE_SUFFIX_HOTKEY = "_HOTKEY"
+Global Const $CFGKEY_KEY_SEQUENCE_SUFFIX_SEQUENCE = "_SEQUENCE"
 
 Global $g_hGUI
 Global $g_hListView
@@ -189,7 +189,7 @@ Func InitHotKey()
 	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_9",       "^+9"),        "HotKey_SwitchTo_Global")
 
 	For $i = 1 To $MAX_KEY_SEQUENCE
-		Local $hotkey = CFGGet($CFGKEY_KEY_SEQENCE_PREFIX & $i & $CFGKEY_KEY_SEQENCE_SUFFIX_HOTKEY)
+		Local $hotkey = CFGGet($CFGKEY_KEY_SEQUENCE_PREFIX & $i & $CFGKEY_KEY_SEQUENCE_SUFFIX_HOTKEY)
 		If $hotkey Then
 			HotKeySet($hotkey, "HotKey_KeySequence")
 		EndIf
@@ -704,9 +704,9 @@ EndFunc
 
 Func HotKey_KeySequence()
 	For $i = 1 To $MAX_KEY_SEQUENCE
-		Local $hotkey = CFGGet($CFGKEY_KEY_SEQENCE_PREFIX & $i & $CFGKEY_KEY_SEQENCE_SUFFIX_HOTKEY)
+		Local $hotkey = CFGGet($CFGKEY_KEY_SEQUENCE_PREFIX & $i & $CFGKEY_KEY_SEQUENCE_SUFFIX_HOTKEY)
 		If @HotKeyPressed == $hotkey Then
-			Local $sequence = CFGGet($CFGKEY_KEY_SEQENCE_PREFIX & $i & $CFGKEY_KEY_SEQENCE_SUFFIX_SEQUENCE)
+			Local $sequence = CFGGet($CFGKEY_KEY_SEQUENCE_PREFIX & $i & $CFGKEY_KEY_SEQUENCE_SUFFIX_SEQUENCE)
 			dbg("HotKey_KeySequence()", $hotkey, $sequence)
 			While _IsPressed("10") Or _IsPressed("11") Or _IsPressed("12")
 				Sleep(50)
