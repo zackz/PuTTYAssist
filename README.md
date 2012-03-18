@@ -38,8 +38,8 @@ Features
 * Popup PuTTY's context menu by keyboard
 * Change PuTTY background color, `CTRL + F9/F10/F11/F12`
 * Send key sequence to PuTTY window
-  * Customized key combination
-  * Extract environment and settings out of box
+  * Send customized key combination
+  * Extract environment variables and settings out of box
   * Run simple script
 
 Settings
