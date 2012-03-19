@@ -186,6 +186,11 @@ KEYSEQ2_SEQUENCE=:set number hlsearch{ENTER}
 ; Original sequence is "/^[^#^;].*". But "^" is shortcut for "CTRL", so replaced with "{^}"
 KEYSEQ3_HOTKEY=!+3
 KEYSEQ3_SEQUENCE=/{^}[{^}{#}{^};].*{ENTER}
+
+; HotKey is ALT + SHIFT + 4
+; Automatically enter password
+KEYSEQ4_HOTKEY=!+4
+KEYSEQ4_SEQUENCE=1234567890{ENTER}
 ```
 
 Tips
