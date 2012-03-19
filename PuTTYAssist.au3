@@ -26,7 +26,7 @@ https://github.com/zackz/PuTTYAssist
 #include <cfgmgr.au3>
 
 Global Const $NAME = "PuTTY Assist"
-Global Const $VERSION = "0.5.8"
+Global Const $VERSION = "0.5.9"
 Global Const $MAIN_TITLE = $NAME & " " & $VERSION
 Global Const $PAGEURL = "https://github.com/zackz/PuTTYAssist"
 Global Const $PATH_INI = "PuTTYAssist.ini"
@@ -703,6 +703,11 @@ Func HotKey_BG_Clear()
 EndFunc
 
 Func HotKey_KeySequence()
+	Local $index = MgrGetActive()
+	If $index < 0 Then
+		HotKey_Func_PassAlong(@HotKeyPressed, "HotKey_Paste")
+		Return
+	EndIf
 	For $i = 1 To $MAX_KEY_SEQUENCE
 		Local $hotkey = CFGGet($CFGKEY_KEY_SEQUENCE_PREFIX & $i & $CFGKEY_KEY_SEQUENCE_SUFFIX_HOTKEY)
 		If @HotKeyPressed == $hotkey Then
