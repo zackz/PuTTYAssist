@@ -191,6 +191,11 @@ KEYSEQ3_SEQUENCE=/{^}[{^}{#}{^};].*{ENTER}
 ; Automatically enter password
 KEYSEQ4_HOTKEY=!+4
 KEYSEQ4_SEQUENCE=1234567890{ENTER}
+
+; HotKey is ALT + SHIFT + 5
+; Run script
+KEYSEQ5_HOTKEY=!+5
+KEYSEQ5_SEQUENCE=wget -q http://192.168.1.2/env.sh && . env.sh{ENTER}
 ```
 
 Tips
