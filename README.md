@@ -58,7 +58,7 @@ AUTOHIDE=1
 AUTOMAXIMIZE=1
 ```
 
-Initial state of main window.
+Initial state of main window. (Use CTRL+` to show/hide this window when PuTTYAssist is running.)
 
 ```ini
 HIDEGUI=0
@@ -216,4 +216,4 @@ then press the letter to quickly locate it.
   * Reset assist dialog location
   * Hide assist dialog, same as ```CTRL + ` ```
 * [Some tips about PuTTY](https://github.com/zackz/PuTTYAssist/wiki/PuTTY-Tips)
-
+* [Use NaviAssist to enhance PuTTYAssist](https://github.com/zackz/NaviAssist/wiki/Use-NaviAssist-to-enhance-PuTTYAssist)
