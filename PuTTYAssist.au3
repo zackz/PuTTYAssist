@@ -40,6 +40,7 @@ Global Const $CFGKEY_POS_X = "POS_X"
 Global Const $CFGKEY_POS_Y = "POS_Y"
 Global Const $CFGKEY_PUTTYPATH = "PUTTYPATH"
 Global Const $CFGKEY_NOTEPADPATH = "NOTEPADPATH"
+Global Const $CFGKEY_HIDEGUI = "HIDEGUI"
 Global Const $CFGKEY_AUTOHIDE = "AUTOHIDE"
 Global Const $CFGKEY_AUTOMAXIMIZE = "AUTOMAXIMIZE"
 Global Const $CFGKEY_REFRESHTIME = "REFRESHTIME"
@@ -116,6 +117,7 @@ Func InitCFG()
 	CFGSetDefault($CFGKEY_POS_Y,         50)
 	CFGSetDefault($CFGKEY_PUTTYPATH,     "")
 	CFGSetDefault($CFGKEY_NOTEPADPATH,   "Notepad.exe") ; "SciTE.exe"
+	CFGSetDefault($CFGKEY_HIDEGUI,       0) ; Initial show state of gui(main) window
 	CFGSetDefault($CFGKEY_AUTOHIDE,      1) ; Auto hide other PuTTY window's taskbar
 	CFGSetDefault($CFGKEY_AUTOMAXIMIZE,  1) ; Auto maximize NEW PuTTY window
 	CFGSetDefault($CFGKEY_REFRESHTIME,   150)
@@ -285,9 +287,13 @@ Func MainDlg()
 	WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), CFGGetInt($CFGKEY_WIDTH), $ASSIST_DEFAULT_HEIGHT)
 	WinSetOnTop($g_hGUI, "", 1)
 
-	MgrGUIShow()
+	If Not CFGGetInt($CFGKEY_HIDEGUI) Then
+		MgrGUIShow()
+	Else
+		GUISetState(@SW_HIDE, $g_hGUI)
+		$g_bManuallyHideGUI = True
+	EndIf
 	MgrRefresh()
-	GUISetState(@SW_SHOW, $g_hGUI)
 	MgrSwitchToCurrent()
 
 	dbg("Main loop start...")
