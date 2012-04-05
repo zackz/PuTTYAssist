@@ -20,7 +20,7 @@ echo IN      %IN%
 echo OUT     %OUT%
 echo.
 
-"%AUT2EXE%" /in %IN% /out %OUT%
+"%AUT2EXE%" /in %IN% /out %OUT% /nopack
 if errorlevel 1 (
 	echo ERROR %errorlevel%
 	REM ~ pause
