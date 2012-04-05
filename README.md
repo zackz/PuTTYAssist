@@ -58,6 +58,12 @@ AUTOHIDE=1
 AUTOMAXIMIZE=1
 ```
 
+Initial state of main window.
+
+```ini
+HIDEGUI=0
+```
+
 Position and width of PuTTYAssist's window
 
 ```ini
