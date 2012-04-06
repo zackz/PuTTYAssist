@@ -287,10 +287,11 @@ Func MainDlg()
 	WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), CFGGetInt($CFGKEY_WIDTH), $ASSIST_DEFAULT_HEIGHT)
 	WinSetOnTop($g_hGUI, "", 1)
 
+	GUISetState(@SW_SHOW, $g_hGUI)
 	If Not CFGGetInt($CFGKEY_HIDEGUI) Then
 		MgrGUIShow()
 	Else
-		GUISetState(@SW_HIDE, $g_hGUI)
+		WinSetState($g_hGUI, "", @SW_HIDE)
 		$g_bManuallyHideGUI = True
 	EndIf
 	MgrRefresh()
