@@ -33,6 +33,8 @@ Write data back to ini:
 	CFGCachedWriteBack(False)  ; Or before exit
 
 History:
+v3
+	In CFGCachedWriteBack, don't actually write data back if nothing changed.
 v2
 	Add CFGCachedWriteBack() encapsulated CFGNeedWriteBack and CFGWriteBack.
 	And save $ini/$section when calling CFGInitData.
@@ -124,6 +126,8 @@ Func CFGCachedWriteBack($cache=True, $delay=3000)
 		EndIf
 	Else
 		; Write back immediately
-		CFGWriteBack($cfg_ini, $cfg_section)
+		If $cfg_timeLatestSet <> 0 Then
+			CFGWriteBack($cfg_ini, $cfg_section)
+		EndIf
 	EndIf
 EndFunc
