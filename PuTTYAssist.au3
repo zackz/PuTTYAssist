@@ -145,8 +145,6 @@ Func InitHotKey()
 	The hash now sends a Windows keystroke; therefore, Send("#r") would send Win+r which launches the Run dialog box.
 #comments-end
 
-	; Show/Hide assist window.
-	HotKeySet(CFGSetDefault("HotKey_GUI_Global",              "^`"),         "HotKey_GUI_Global")
 	; Show PuTTY's config dialog and focus on session list.
 	; Tips: Make stored session names with different initial letters, press the letter to quickly focus on session.
 	HotKeySet(CFGSetDefault("HotKey_NewPutty_Global",         "!{F1}"),      "HotKey_NewPutty_Global")
@@ -764,7 +762,12 @@ Func HotKey_Func_SwitchTo($indexTo, $funcSrc)
 EndFunc
 
 Func HotKey_SwitchToLastOne_Global()
-	MgrSwitchToCurrent()
+	Local $index = MgrGetActive()
+	If $index >= 0 Or WinActive($g_hGUI) Then
+		HotKey_GUI_Global()
+	Else
+		MgrSwitchToCurrent()
+	EndIf
 EndFunc
 
 Func HotKey_SwitchTo_Global()
