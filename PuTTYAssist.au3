@@ -26,10 +26,10 @@ https://github.com/zackz/PuTTYAssist
 #include <cfgmgr.au3>
 
 Global Const $NAME = "PuTTY Assist"
-Global Const $VERSION = "0.5.9"
+Global Const $VERSION = "0.6.0"
 Global Const $MAIN_TITLE = $NAME & " " & $VERSION
 Global Const $PAGEURL = "https://github.com/zackz/PuTTYAssist"
-Global Const $PATH_INI = "PuTTYAssist.ini"
+Global Const $PATH_INI = @ScriptDir & "\" & "PuTTYAssist.ini"
 Global Const $SECTION_NAME = "PROPERTIES"
 Global Const $TITLE_PUTTYCONFIGBOX = "[CLASS:PuTTYConfigBox]"
 Global Const $ASSIST_DEFAULT_HEIGHT = 100
@@ -76,6 +76,17 @@ Global $g_bitsDebugOutput = 0 ; 0: no output, 1: console, 2: OutputDebugString
 main()
 
 Func main()
+	If $CmdLine[0] = 1 Then
+		Local $pid = $CmdLine[1]
+		For $i = 0 To 10
+			Sleep(500)
+			If ProcessExists($pid) == 0 Then
+				ExitLoop
+			EndIf
+			ProcessClose($pid)
+		Next
+	EndIf
+
 	If _Singleton($NAME, 1) = 0 Then
 		; Popup last assist and open last putty
 		If WinActivate($MAIN_TITLE) <> 0 Then
@@ -207,9 +218,9 @@ Func InitTray()
 	TrayItemSetOnEvent(-1, "Tray_EventHandler")
 	TrayCreateItem("")
 
-	$g_idTrayHide = TrayCreateItem("Hide assist dialog")
-	TrayItemSetOnEvent(-1, "Tray_EventHandler")
-	TrayCreateItem("")
+;~ 	$g_idTrayHide = TrayCreateItem("Hide assist dialog")
+;~ 	TrayItemSetOnEvent(-1, "Tray_EventHandler")
+;~ 	TrayCreateItem("")
 
 ;~ 	$g_idTrayAbout = TrayCreateItem("About...")
 ;~ 	TrayItemSetOnEvent(-1, "Tray_EventHandler")
@@ -259,9 +270,15 @@ Func MainDlg()
 	Local $style = BitOR($LVS_SHOWSELALWAYS, $LVS_SINGLESEL, $LVS_NOCOLUMNHEADER, $LVS_NOSCROLL)
 	$g_idListView = GUICtrlCreateListView("", 0, 0, $aiGUISize[0], $aiGUISize[1] - 20, $style)
 	$g_hListView = GUICtrlGetHandle($g_idListView)
-	Local $hHelp = GUICtrlCreateButton("Show Hotkeys", 0, $aiGUISize[1] - 20, $aiGUISize[0], 20)
+	Local $widthS = 2
+	Local $width = ($aiGUISize[0] - $widthS * 2) / 3
+	Local $hHelp = GUICtrlCreateButton("Help", 0, $aiGUISize[1] - 20, $width, 20)
+	Local $hEditConfigure = GUICtrlCreateButton("Edit Configure", $width + $widthS, $aiGUISize[1] - 20, $width, 20)
+	Local $hReconfigure = GUICtrlCreateButton("Reconfigure", ($width + $widthS) * 2, $aiGUISize[1] - 20, $width, 20)
 	GUICtrlSetResizing($g_idListView, $GUI_DOCKBORDERS)
 	GUICtrlSetResizing($hHelp, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKLEFT, $GUI_DOCKBOTTOM))
+	GUICtrlSetResizing($hEditConfigure, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
+	GUICtrlSetResizing($hReconfigure, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKRIGHT, $GUI_DOCKBOTTOM))
 
 	$style = BitOR($LVS_EX_GRIDLINES, $LVS_EX_FULLROWSELECT, $WS_EX_CLIENTEDGE, $LVS_EX_BORDERSELECT)
 	_GUICtrlListView_SetExtendedListViewStyle($g_hListView, $style)
@@ -285,7 +302,7 @@ Func MainDlg()
 	WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), CFGGetInt($CFGKEY_WIDTH), $ASSIST_DEFAULT_HEIGHT)
 	WinSetOnTop($g_hGUI, "", 1)
 
-	MgrGUIShow(Not(CFGGetInt($CFGKEY_HIDEGUI)))
+	MgrGUIShow(Not CFGGetInt($CFGKEY_HIDEGUI))
 	MgrRefresh()
 	MgrSwitchToCurrent()
 
@@ -315,6 +332,18 @@ Func MainDlg()
 				EndIf
 			Case $hHelp
 				ShowAbout()
+			Case $hEditConfigure
+				ShellExecute($PATH_INI)
+			Case $hReconfigure
+				TraySetIcon("blank")
+				If @AutoItExe == @ScriptFullPath Then
+					Local $cmd = @AutoItExe & " " & @AutoItPID
+				Else
+					Local $cmd = @AutoItExe & " " & @ScriptFullPath & " " & @AutoItPID
+				EndIf
+				dbg("Reconfigure: <", $cmd, ">")
+				Run($cmd, @WorkingDir)
+				ExitLoop
 		EndSwitch
 	WEnd
 
@@ -324,62 +353,7 @@ Func MainDlg()
 EndFunc   ;==>MainDlg
 
 Func ShowAbout()
-	Local $text = _
-			"by Zack Zhou <zackzhh@gmail.com>" & @CRLF & @CRLF & _
-			"Hotkeys:" & @CRLF & _
-			"* ALT+F1             Open new PuTTY" & @CRLF & _
-			"  ALT+F9/F10/F11/F12 Change current PuTTY's background color to red/green/blue/black" & @CRLF & _
-			"* ALT+`              Open last PuTTY window" & @CRLF & _
-			"* CTRL+`             Show/Hide assist dialog" & @CRLF & _
-			"  CTRL+SHITF+T       Duplicate session" & @CRLF & _
-			"  CTRL+SHITF+C       Open a notepad show all text in current PuTTY (easy to copy)" & @CRLF & _
-			"  CTRL+V             Paste" & @CRLF & _
-			@CRLF & _
-			"  CTRL+TAB           Switch to last PuTTY window" & @CRLF & _
-			"  ALT+1, ALT+2, ..., ALT+[N]" & @CRLF & _
-			"                     Switch to specified PuTTY window by N (Only works on PuTTY windows)" & @CRLF & _
-			"* CTRL+SHIFT+[N]     Same to ALT+[N] but works anywhere" & @CRLF & _
-			"  CTRL+SHITF+[J/K]   Switch PuTTY windows sequentially" & @CRLF & _
-			"  CTRL+SHITF+[H/M/L] Switch to first/middle/last PuTTY window" & @CRLF & _
-			"  ('*' means global keys which are valid on any window)" & @CRLF & _
-			@CRLF & _
-			"PuTTY and AutoIt are both great!!"
-	$g_bShowingAbout = True
-	If $g_hGUI Then WinSetState($g_hGUI, "", @SW_DISABLE)
-
-	Local $iTextLeft = 9
-	Local $iTitleHeight = 35
-	Local $hAbout = GUICreate("About Assist", 550, 363, Default, Default, BitOR($WS_SIZEBOX, 0), 0, $g_hGUI)
-	Local $aiGUISize = WinGetClientSize($hAbout)
-	Local $hEdit = GUICtrlCreateEdit($text, $iTextLeft, $iTitleHeight + 8, $aiGUISize[0], $aiGUISize[1] - $iTitleHeight - 60, BitOR($ES_MULTILINE, $ES_READONLY), $WS_EX_TRANSPARENT)
-	Local $hLine = GUICtrlCreateLabel("", 0, $aiGUISize[1] - 42, $aiGUISize[0], 2, 0x50000010)
-	Local $hOK = GUICtrlCreateButton("&OK", $aiGUISize[0] - 90, $aiGUISize[1] - 32, 80)
-	Local $hPage = GUICtrlCreateButton("&Visit " & $NAME & " github page", $aiGUISize[0] - 320, $aiGUISize[1] - 32, 220)
-	GUISetFont(22, 800, 0, "Times New Roman")
-	Local $hTitleText = GUICtrlCreateLabel($MAIN_TITLE, $iTextLeft, 8, $aiGUISize[0], $iTitleHeight)
-	GUICtrlSetColor($hTitleText, 0x000000)
-
-	GUICtrlSetResizing($hEdit, $GUI_DOCKBORDERS)
-	GUICtrlSetResizing($hLine, $GUI_DOCKBOTTOM)
-	GUICtrlSetResizing($hOK, BitOR($GUI_DOCKSIZE, $GUI_DOCKRIGHT, $GUI_DOCKBOTTOM))
-	GUICtrlSetResizing($hPage, BitOR($GUI_DOCKSIZE, $GUI_DOCKRIGHT, $GUI_DOCKBOTTOM))
-	GUICtrlSetState($hOK, $GUI_DEFBUTTON)
-	GUISetState(@SW_SHOW, $hAbout)
-	While 1
-		Switch GUIGetMsg()
-			Case $hPage
-				Run(@ComSpec & ' /c start "" "' & $PAGEURL & '"', "", @SW_HIDE)
-			Case $GUI_EVENT_CLOSE, $hOK
-				ExitLoop
-		EndSwitch
-	WEnd
-	GUIDelete($hAbout)
-
-	If $g_hGUI Then
-		WinSetState($g_hGUI, "", @SW_ENABLE)
-		WinActivate($g_hGUI)
-	EndIf
-	$g_bShowingAbout = False
+	Run(@ComSpec & ' /c start "" "' & $PAGEURL & '"', "", @SW_HIDE)
 EndFunc
 
 Func ListWindowProc($hWnd, $Msg, $wParam, $lParam)
@@ -851,14 +825,14 @@ EndFunc
 
 Func MgrGUIShow($show)
 	If $show Then
-		WinSetState($g_hGUI, "", @SW_SHOW)
+		GUISetState(@SW_SHOW, $g_hGUI)
 		WinActivate($g_hGUI)
 		GUICtrlSetState($g_idListView, $GUI_FOCUS)
 		; Call $g_oTaskbarList.DeleteTab immediately may not 100% hide the bar,
 		; and may take lots of time in "DeleteTab"
 		$g_HideTaskbar_AfterRefreshing = _Timer_Init()
 	Else
-		WinSetState($g_hGUI, "", @SW_HIDE)
+		GUISetState(@SW_HIDE, $g_hGUI)
 		$g_bManuallyHideGUI = True
 	EndIf
 EndFunc
@@ -910,7 +884,7 @@ Func MgrRefresh()
 			EndIf
 		Else
 			If Not(WinActive($g_hGUI)) and Not($g_bShowingAbout) Then
-				MgrGUIShow(False)
+				GUISetState(@SW_HIDE, $g_hGUI)
 			EndIf
 		EndIf
 	EndIf
