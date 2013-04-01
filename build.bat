@@ -1,4 +1,9 @@
 @echo off
+
+echo.
+echo Deprecated! Use autoit.exe to run script instead of compiling executable file.
+echo.
+
 set IN=PuTTYAssist.au3
 for /f "tokens=5 delims= " %%i in ('find /i "$VERSION =" %IN%') do (
 	set VER=%%i
