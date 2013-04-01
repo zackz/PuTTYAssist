@@ -285,13 +285,7 @@ Func MainDlg()
 	WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), CFGGetInt($CFGKEY_WIDTH), $ASSIST_DEFAULT_HEIGHT)
 	WinSetOnTop($g_hGUI, "", 1)
 
-	GUISetState(@SW_SHOW, $g_hGUI)
-	If Not CFGGetInt($CFGKEY_HIDEGUI) Then
-		MgrGUIShow()
-	Else
-		WinSetState($g_hGUI, "", @SW_HIDE)
-		$g_bManuallyHideGUI = True
-	EndIf
+	MgrGUIShow(Not(CFGGetInt($CFGKEY_HIDEGUI)))
 	MgrRefresh()
 	MgrSwitchToCurrent()
 
@@ -409,6 +403,7 @@ Func ListWindowProc($hWnd, $Msg, $wParam, $lParam)
 						Case $VK_RETURN
 							dbg("Enter key is pressed")
 							MgrSwitchToCurrent()
+							MgrGUIAutoHide()
 							Return 0
 					EndSwitch
 				Case $WM_KEYDOWN
@@ -417,6 +412,7 @@ Func ListWindowProc($hWnd, $Msg, $wParam, $lParam)
 					Switch $wParam
 						Case 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39
 							MgrSwitchTo($wParam - 0x31)
+							MgrGUIAutoHide()
 						Case $VK_K, $VK_UP
 							$next = Mod($index - 1 + DataGetLength(), DataGetLength())
 						Case $VK_J, $VK_DOWN
@@ -466,6 +462,7 @@ Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
 					Local $index = DllStructGetData($tInfo, "Index")
 					If $index >= 0 Then
 						MgrSwitchTo($index)
+						MgrGUIAutoHide()
 					EndIf
 				Case $LVN_BEGINDRAG
 					$g_nDragging = MgrGetCurrent()
@@ -730,13 +727,7 @@ Func HotKey_Func_GUI($show)
 	; Sometimes GUI just showed by CTRL+` disappeared very quickly.
 	; So block refreshing during showing GUI window
 	$g_bRefreshing = True
-	If $show Then
-;~ 		MgrSwitchToCurrent()                  ; Show last putty window and focus on it
-;~ 		MgrSwitchTo_original(MgrGetCurrent()) ; Show last putty window and focus on assist dialog
-		MgrGUIShow()
-	Else
-		WinSetState($g_hGUI, "", @SW_HIDE)
-	EndIf
+	MgrGUIShow($show)
 	$g_bRefreshing = False
 EndFunc
 
@@ -858,13 +849,24 @@ Func MgrGetCurrent()
 	return _GUICtrlListView_GetNextItem($g_hListView)
 EndFunc
 
-Func MgrGUIShow()
-	WinSetState($g_hGUI, "", @SW_SHOW)
-	WinActivate($g_hGUI)
-	GUICtrlSetState($g_idListView, $GUI_FOCUS)
-	; Call $g_oTaskbarList.DeleteTab immediately may not 100% hide the bar,
-	; and may take lots of time in "DeleteTab"
-	$g_HideTaskbar_AfterRefreshing = _Timer_Init()
+Func MgrGUIShow($show)
+	If $show Then
+		WinSetState($g_hGUI, "", @SW_SHOW)
+		WinActivate($g_hGUI)
+		GUICtrlSetState($g_idListView, $GUI_FOCUS)
+		; Call $g_oTaskbarList.DeleteTab immediately may not 100% hide the bar,
+		; and may take lots of time in "DeleteTab"
+		$g_HideTaskbar_AfterRefreshing = _Timer_Init()
+	Else
+		WinSetState($g_hGUI, "", @SW_HIDE)
+		$g_bManuallyHideGUI = True
+	EndIf
+EndFunc
+
+Func MgrGUIAutoHide()
+	If CFGGetInt($CFGKEY_HIDEGUI) Then
+		MgrGUIShow(False)
+	EndIf
 EndFunc
 
 Func MgrRefresh()
@@ -904,11 +906,11 @@ Func MgrRefresh()
 	If Not($g_bManuallyHideGUI) Then
 		If $index >= 0 Then
 			If Not($showingGUI) Then
-				MgrGUIShow()
+				MgrGUIShow(True)
 			EndIf
 		Else
 			If Not(WinActive($g_hGUI)) and Not($g_bShowingAbout) Then
-				WinSetState($g_hGUI, "", @SW_HIDE)
+				MgrGUIShow(False)
 			EndIf
 		EndIf
 	EndIf
