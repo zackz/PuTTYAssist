@@ -11,7 +11,7 @@ Getting Started
 * Install [AutoIt(3.3.8+)](http://www.autoitscript.com/site/autoit/downloads/)
   * Or get `AutoIt.exe` and `Include` directory. Clean and minimized, it's preffered way to
 run PuTTYAssist.
-  * Or compile excutable file using `build.py`.
+  * Or compile excutable file using `build.bat`.
 * Run PuTTYAssist.au3 and open some PuTTYs, and try some shortcut below
   * Use `ALT + 1` / `ALT + 2` ... and `CTRL + TAB` to switch
   * Use `ALT + F1` to open new PuTTY...
@@ -41,7 +41,10 @@ After first run, a configure file - **PuTTYAssist.ini** was auto generated in sa
 All config with prefix `HotKey_` is a key combination: `! is ALT`, `+ is SHIFT`, `^ is CTRL`,
 `# is WINKEY`, and [more...](http://www.autoitscript.com/autoit3/docs/functions/Send.htm)
 
-*(Make sure to close PuTTYAssist first before making any changes)*
+*(Make sure to close PuTTYAssist first before making any changes. Or use "Edit configure" /
+"Reconfigure" on main dialog.)*
+
+### Properties
 
 Hide PuTTY in taskbar, and maximize it automatically.
 
@@ -63,6 +66,8 @@ WIDTH=280
 POS_X=1370
 POS_Y=50
 ```
+
+### Hotkeys
 
 Paste, `CTRL + V`
 
@@ -161,6 +166,8 @@ HotKey_SwitchTo_Global_8=^+8
 HotKey_SwitchTo_Global_9=^+9
 ```
 
+### Key sequence
+
 Send key sequence to PuTTY window
 
 ```ini
@@ -170,7 +177,7 @@ KEYSEQ1_HOTKEY=!+1
 KEYSEQ1_SEQUENCE=^lifconfig{ENTER}
 
 ; HotKey is ALT + SHIFT + 2
-; This key sequence is for vim which add two options: number and hlsearch
+; This key sequence is for vim which add two options: number and hlsearch and set color scheme.
 KEYSEQ2_HOTKEY=!+2
 KEYSEQ2_SEQUENCE=:set number hlsearch{ENTER}:color delek{ENTER}
 
