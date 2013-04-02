@@ -67,29 +67,55 @@ POS_X=1370
 POS_Y=50
 ```
 
-### Hotkeys
+### Global Hotkeys
 
-Paste, `CTRL + V`
-
-```ini
-HotKey_Paste=^v
-```
-
-Copy all text to editor, `CTRL + SHIFT + C`
-
-```ini
-HotKey_Copy=^+c
-NOTEPADPATH=Notepad.exe
-```
-
-Popup PuTTY session window, `ALT + F1`
+`ALT + F1`: Popup PuTTY session window
 
 ```ini
 HotKey_NewPutty_Global=!{F1}
 PUTTYPATH=C:\putty\PUTTY.EXE
 ```
 
-Duplicate session, `CTRL + SHIFT + T`
+```ALT + ` ```: Popup last PuTTY window
+And it'll show/hide GUI dialog when PuTTY window already on foreground.
+
+```ini
+HotKey_SwitchToLastOne_Global=!`
+```
+
+`CTRL + SHIFT + [N]`: Popup managed PuTTY window even when focus is **not** on PuTTYAssist
+or PuTTY windows.
+
+```ini
+HotKey_SwitchTo_Global_1=^+1
+HotKey_SwitchTo_Global_2=^+2
+HotKey_SwitchTo_Global_3=^+3
+HotKey_SwitchTo_Global_4=^+4
+HotKey_SwitchTo_Global_5=^+5
+HotKey_SwitchTo_Global_6=^+6
+HotKey_SwitchTo_Global_7=^+7
+HotKey_SwitchTo_Global_8=^+8
+HotKey_SwitchTo_Global_9=^+9
+```
+
+### Local Hotkeys
+
+*(Only works when putty window is on foreground)*
+
+`CTRL + V`: Paste
+
+```ini
+HotKey_Paste=^v
+```
+
+`CTRL + SHIFT + C`: Copy all text to editor
+
+```ini
+HotKey_Copy=^+c
+NOTEPADPATH=Notepad.exe
+```
+
+`CTRL + SHIFT + T`: Duplicate session
 
 ```ini
 HotKey_DuplicateSession=^+t
@@ -101,7 +127,7 @@ PuTTY context menu
 HotKey_Appskey={APPSKEY}
 ```
 
-Change background color, `CTRL + F9/F10/F11/F12`
+`CTRL + F9/F10/F11/F12`: Change background color
 
 ```ini
 HotKey_BG_R=!{F9}
@@ -110,14 +136,7 @@ HotKey_BG_B=!{F11}
 HotKey_BG_Clear=!{F12}
 ```
 
-Popup last PuTTY window when focus is on anywhere, ```ALT + ` ```.
-And it'll show/hide GUI dialog when PuTTY window already on foreground.
-
-```ini
-HotKey_SwitchToLastOne_Global=!`
-```
-
-Switch to last PuTTY window, `CTRL + TAB`
+`CTRL + TAB`: Switch to last PuTTY window
 
 ```ini
 HotKey_SwitchToMost=^{TAB}
@@ -138,7 +157,7 @@ HotKey_Switch_M=^+m
 HotKey_Switch_L=^+l
 ```
 
-Switch to managed PuTTY window when focus is on PuTTYAssist or PuTTY windos, `ALT + [N]`
+`ALT + [N]`: Switch to managed PuTTY window when focus is on PuTTYAssist or PuTTY windos.
 
 ```ini
 HotKey_SwitchTo_1=!1
@@ -152,23 +171,9 @@ HotKey_SwitchTo_8=!8
 HotKey_SwitchTo_9=!9
 ```
 
-Popup managed PuTTY window when focus is **not** on PuTTYAssist or PuTTY windos, `CTRL + SHIFT + [N]`
-
-```ini
-HotKey_SwitchTo_Global_1=^+1
-HotKey_SwitchTo_Global_2=^+2
-HotKey_SwitchTo_Global_3=^+3
-HotKey_SwitchTo_Global_4=^+4
-HotKey_SwitchTo_Global_5=^+5
-HotKey_SwitchTo_Global_6=^+6
-HotKey_SwitchTo_Global_7=^+7
-HotKey_SwitchTo_Global_8=^+8
-HotKey_SwitchTo_Global_9=^+9
-```
-
 ### Key sequence
 
-Send key sequence to PuTTY window
+Send key sequence to PuTTY window.
 
 ```ini
 ; HotKey is ALT + SHIFT + 1
