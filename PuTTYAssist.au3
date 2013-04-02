@@ -336,11 +336,11 @@ Func MainDlg()
 				ShellExecute($PATH_INI)
 			Case $hReconfigure
 				TraySetIcon("blank")
-				If @AutoItExe == @ScriptFullPath Then
-					Local $cmd = @AutoItExe & " " & @AutoItPID
-				Else
-					Local $cmd = @AutoItExe & " " & @ScriptFullPath & " " & @AutoItPID
+				Local $cmd = '"' & @AutoItExe & '" '
+				If @AutoItExe <> @ScriptFullPath Then
+					$cmd = $cmd & '"' & @ScriptFullPath & '" '
 				EndIf
+				$cmd = $cmd & @AutoItPID
 				dbg("Reconfigure: <", $cmd, ">")
 				Run($cmd, @WorkingDir)
 				ExitLoop
