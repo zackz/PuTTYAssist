@@ -314,12 +314,15 @@ Func MainDlg()
 				; http://www.autoitscript.com/forum/topic/7823-how-to-stop-esc-from-sending-gui-event-close/
 				; WinClose and WinKill isn't working. Use "$g_bLeaving" to determine whether to quit and ask before quiting.
 				; Opt("GUICloseOnESC", 0)
-				Local $bQuit = False
-				If $g_bLeaving Then
-					$bQuit = True
-				Else
-					Local $ret = MsgBox(1, $NAME, "Close " & $NAME & "?")
-					If $ret = 1 Then $bQuit = True
+				Local $bQuit = True
+				If Not $g_bLeaving Then
+					; Hide dialog. Only "Quit" in tray can actually close puttyassist process.
+					$bQuit = False
+					If CFGGetInt($CFGKEY_HIDEGUI) Then
+						MgrGUIShow(False)
+					Else
+						MgrSwitchToCurrent()
+					EndIf
 				EndIf
 				If $bQuit Then
 					_Timer_KillTimer($g_hGUI, $idTimer)
