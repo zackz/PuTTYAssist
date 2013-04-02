@@ -2,28 +2,20 @@ PuTTY Assist
 ============
 
 PuTTY Assist is auxiliary tools for [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/)
-based on [AutoIt](http://www.autoitscript.com/site/autoit/). Developed for people
-looking for extreme efficiency.
-
-* Easy to use, dozens of handy customized hotkeys
-* Small and independent executable file
-* Easy to hack
-  * Only about 1200 lines in single source file
-  * Based on AutoIt making hack easier
+based on [AutoIt](http://www.autoitscript.com/site/autoit/). Developed for people working on
+windows platform and looking for extreme efficiency.
 
 Getting Started
 ---------------
 
-* [Download](https://github.com/zackz/PuTTYAssist/downloads) latest executable file
-* If you installed [AutoIt(3.3.8)](http://www.autoitscript.com/site/autoit/downloads/)
-  * Run PuTTYAssist.au3 directly
-  * Or compile your own excutable file
-* Run PuTTYAssist.exe and open some PuTTYs, and try some shortcut below
+* Install [AutoIt(3.3.8+)](http://www.autoitscript.com/site/autoit/downloads/)
+  * Or get `AutoIt.exe` and `Include` directory. Clean and minimized, it's preffered way to
+run PuTTYAssist.
+  * Or compile excutable file using `build.py`.
+* Run PuTTYAssist.au3 and open some PuTTYs, and try some shortcut below
   * Use `ALT + 1` / `ALT + 2` ... and `CTRL + TAB` to switch
   * Use `ALT + F1` to open new PuTTY...
   * Use ```ALT + ` ``` to show last PuTTY
-* Don't be scared by below text. PuTTYAssist still works well only use this three
-shortcut: `ALT + [N]` / `CTRL + TAB` / ```ALT + ` ```
 
 Features
 --------
@@ -58,7 +50,7 @@ AUTOHIDE=1
 AUTOMAXIMIZE=1
 ```
 
-Initial state of main window. (Use CTRL+` to show/hide this window when PuTTYAssist is running.)
+Initial state of main window. (Use ALT+` to show/hide this window when PuTTYAssist is running.)
 
 ```ini
 HIDEGUI=0
@@ -113,13 +105,8 @@ HotKey_BG_B=!{F11}
 HotKey_BG_Clear=!{F12}
 ```
 
-Show/hide PuTTYAssist window, ```CTRL + ` ```
-
-```ini
-HotKey_GUI_Global=^`
-```
-
-Popup last PuTTY window when focus is on anywhere, ```ALT + ` ```
+Popup last PuTTY window when focus is on anywhere, ```ALT + ` ```.
+And it'll show/hide GUI dialog when PuTTY window already on foreground.
 
 ```ini
 HotKey_SwitchToLastOne_Global=!`
@@ -185,7 +172,7 @@ KEYSEQ1_SEQUENCE=^lifconfig{ENTER}
 ; HotKey is ALT + SHIFT + 2
 ; This key sequence is for vim which add two options: number and hlsearch
 KEYSEQ2_HOTKEY=!+2
-KEYSEQ2_SEQUENCE=:set number hlsearch{ENTER}
+KEYSEQ2_SEQUENCE=:set number hlsearch{ENTER}:color delek{ENTER}
 
 ; HotKey is ALT + SHIFT + 3
 ; This key sequence is for vim or less which highlight valid lines except comments.
@@ -201,7 +188,7 @@ KEYSEQ4_SEQUENCE=1234567890{ENTER}
 ; HotKey is ALT + SHIFT + 5
 ; Run script
 KEYSEQ5_HOTKEY=!+5
-KEYSEQ5_SEQUENCE=wget -q http://192.168.1.2/env.sh && . env.sh{ENTER}
+KEYSEQ5_SEQUENCE=. <(wget -qO- http://192.168.1.2/env.sh){ENTER}
 ```
 
 Tips
@@ -214,6 +201,6 @@ focus was on Saved Sessions list. So make stored session names with different in
 then press the letter to quickly locate it.
 * PuTTYAssist has a system tray
   * Reset assist dialog location
-  * Hide assist dialog, same as ```CTRL + ` ```
+  * Quit PuTTYAssist
 * [Some tips about PuTTY](https://github.com/zackz/PuTTYAssist/wiki/PuTTY-Tips)
 * [Use NaviAssist to enhance PuTTYAssist](https://github.com/zackz/NaviAssist/wiki/Use-NaviAssist-to-enhance-PuTTYAssist)
