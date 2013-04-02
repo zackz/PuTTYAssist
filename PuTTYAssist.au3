@@ -318,11 +318,7 @@ Func MainDlg()
 				If Not $g_bLeaving Then
 					; Hide dialog. Only "Quit" in tray can actually close puttyassist process.
 					$bQuit = False
-					If CFGGetInt($CFGKEY_HIDEGUI) Then
-						MgrGUIShow(False)
-					Else
-						MgrSwitchToCurrent()
-					EndIf
+					MgrGUIShow(False)
 				EndIf
 				If $bQuit Then
 					_Timer_KillTimer($g_hGUI, $idTimer)
