@@ -270,15 +270,15 @@ Func MainDlg()
 	Local $style = BitOR($LVS_SHOWSELALWAYS, $LVS_SINGLESEL, $LVS_NOCOLUMNHEADER, $LVS_NOSCROLL)
 	$g_idListView = GUICtrlCreateListView("", 0, 0, $aiGUISize[0], $aiGUISize[1] - 20, $style)
 	$g_hListView = GUICtrlGetHandle($g_idListView)
-	Local $widthS = 2
-	Local $width = ($aiGUISize[0] - $widthS * 2) / 3
+	Local $widthS = 3
+	Local $width = Int(($aiGUISize[0] - $widthS * 2 - 5) / 3)
 	Local $hHelp = GUICtrlCreateButton("Help", 0, $aiGUISize[1] - 20, $width, 20)
 	Local $hEditConfigure = GUICtrlCreateButton("Edit Configure", $width + $widthS, $aiGUISize[1] - 20, $width, 20)
 	Local $hReconfigure = GUICtrlCreateButton("Reconfigure", ($width + $widthS) * 2, $aiGUISize[1] - 20, $width, 20)
 	GUICtrlSetResizing($g_idListView, $GUI_DOCKBORDERS)
-	GUICtrlSetResizing($hHelp, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKLEFT, $GUI_DOCKBOTTOM))
+	GUICtrlSetResizing($hHelp, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
 	GUICtrlSetResizing($hEditConfigure, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
-	GUICtrlSetResizing($hReconfigure, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKRIGHT, $GUI_DOCKBOTTOM))
+	GUICtrlSetResizing($hReconfigure, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
 
 	$style = BitOR($LVS_EX_GRIDLINES, $LVS_EX_FULLROWSELECT, $WS_EX_CLIENTEDGE, $LVS_EX_BORDERSELECT)
 	_GUICtrlListView_SetExtendedListViewStyle($g_hListView, $style)
