@@ -336,9 +336,11 @@ Func MainDlg()
 			Case $hHelp
 				ShowAbout()
 			Case $hEditConfigure
+				CFGCachedWriteBack(False)
 				ShellExecute($PATH_INI)
 			Case $hReconfigure
 				TraySetIcon("blank")
+				CFGCachedWriteBack(False)
 				Local $cmd = '"' & @AutoItExe & '" '
 				If @AutoItExe <> @ScriptFullPath Then
 					$cmd = $cmd & '"' & @ScriptFullPath & '" '
@@ -1249,7 +1251,3 @@ Func _wndMinAnimation($value = True)
 EndFunc   ;==_wndMinAnimation
 
 #endregion - _wndMinAnimation
-
-
-
-
