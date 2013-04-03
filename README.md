@@ -3,27 +3,28 @@ PuTTY Assist
 
 PuTTY Assist is auxiliary tools for [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/)
 based on [AutoIt](http://www.autoitscript.com/site/autoit/). Developed for people working on
-windows platform and looking for extreme efficiency.
+windows platform and looking for efficiency.
 
 Getting Started
 ---------------
 
 * Install [AutoIt(3.3.8+)](http://www.autoitscript.com/site/autoit/downloads/)
-  * Or get `AutoIt.exe` and `Include` directory. Clean and minimized, it's preffered way to
+  * Or get `AutoIt.exe` and `Include` directory. Clean and minimized, it's preferred way to
 run PuTTYAssist.
   * Or compile excutable file using `build.bat`.
-* Run PuTTYAssist.au3 and open some PuTTYs, and try some shortcut below
+* Run PuTTYAssist.au3, open some PuTTYs, and try some shortcut below:
   * Use `ALT + 1` / `ALT + 2` ... and `CTRL + TAB` to switch
   * Use `ALT + F1` to open new PuTTY...
-  * Use ```ALT + ` ``` to show last PuTTY
+  * Use ```ALT + ` ``` to show last PuTTY or show/hide list dialog. Shortcut keys `123456789hjklm`
+are enable to select item on list when focus is on this dialog.
 
 Features
 --------
 
-* Automatically find all running PuTTY windows, hide in taskbar, and maximize the window
+* Automatically find all running PuTTY windows, hide in taskbar, and maximize the window.
 * Use configurable shortcut to popup managed PuTTY windows, ```ALT + ` ```, `CTRL + TAB`, 
 `ALT + [N]`, `CTRL + SHIFT + [N]`, `ALT + SHIFT + J/K/H/M/L`
-* `CTRL + V` is available now
+* `CTRL + V` is available
 * Copy all text in PuTTY to text editor, convenient for copy, `CTRL + SHIFT + C`
 * Create new PuTTY session, `ALT + F1`
 * Duplicate current session, `CTRL + SHIFT + T`
@@ -37,7 +38,7 @@ Features
 Settings
 --------
 
-After first run, a configure file - **PuTTYAssist.ini** was auto generated in same directory.
+After first run, a configure file - **PuTTYAssist.ini** was automatically generated in same directory.
 All config with prefix `HotKey_` is a key combination: `! is ALT`, `+ is SHIFT`, `^ is CTRL`,
 `# is WINKEY`, and [more...](http://www.autoitscript.com/autoit3/docs/functions/Send.htm)
 
@@ -53,7 +54,8 @@ AUTOHIDE=1
 AUTOMAXIMIZE=1
 ```
 
-Initial state of main window. (Use ALT+` to show/hide this window when PuTTYAssist is running.)
+Initial state of main window. 1 is preferred. Use ```ALT + ` ``` to show/hide this window.
+
 
 ```ini
 HIDEGUI=0
@@ -76,8 +78,8 @@ HotKey_NewPutty_Global=!{F1}
 PUTTYPATH=C:\putty\PUTTY.EXE
 ```
 
-```ALT + ` ```: Popup last PuTTY window
-And it'll show/hide GUI dialog when PuTTY window already on foreground.
+```ALT + ` ```: Popup last PuTTY window. And it'll show/hide dialog when PuTTY window
+is already on foreground.
 
 ```ini
 HotKey_SwitchToLastOne_Global=!`
@@ -121,7 +123,7 @@ NOTEPADPATH=Notepad.exe
 HotKey_DuplicateSession=^+t
 ```
 
-PuTTY context menu
+`Menu key`: PuTTY context menu
 
 ```ini
 HotKey_Appskey={APPSKEY}
