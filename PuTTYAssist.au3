@@ -1118,12 +1118,20 @@ Func RQueRemoveAll()
 	WEnd
 EndFunc
 
+Func ListGetTitle($t, $i)
+	if $i + 1 > 9 Then
+		Return $t
+	Else
+		Return $i + 1 & ". " & $t
+	EndIf
+EndFunc
+
 Func ListUpdate($hList, $avData)
 	Local $lastRowCount = _GUICtrlListView_GetItemCount($g_hListView)
 	Local $newRowCount = UBound($avData)
 	_GUICtrlListView_DeleteAllItems($hList)
 	For $i = 0 To UBound($avData) - 1
-		Local $text = $i + 1 & ". " & DataGetTitle($i)
+		Local $text = ListGetTitle(DataGetTitle($i), $i)
 		_GUICtrlListView_AddItem($hList, $text)
 	Next
 	; Resize GUI
@@ -1137,7 +1145,7 @@ EndFunc
 
 Func ListUpdateNames($hList, $avData)
 	For $i = 0 To UBound($avData) - 1
-		Local $text = $i + 1 & ". " & DataGetTitle($i)
+		Local $text = ListGetTitle(DataGetTitle($i), $i)
 		Local $textOld = _GUICtrlListView_GetItemText($hList, $i)
 		If Not($text = $textOld) then
 			_GUICtrlListView_SetItem($hList, $text, $i)
