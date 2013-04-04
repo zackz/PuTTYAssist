@@ -133,38 +133,28 @@ Func InitCFG()
 	CFGSetDefault($CFGKEY_AUTOMAXIMIZE,  1) ; Auto maximize NEW PuTTY window
 	CFGSetDefault($CFGKEY_REFRESHTIME,   150)
 	CFGSetDefault($CFGKEY_DEBUG_BITS,    0)
-	CFGSetDefault("HOTKEY_NOTES",        "ALT[!], SHIFT[+], CTRL[^], WINKEY[#], Details in http://www.autoitscript.com/autoit3/docs/functions/Send.htm")
+	CFGSetDefault("HOTKEY_NOTES",        "ALT[!], SHIFT[+], CTRL[^], WINKEY[#], " & _
+		"Details in http://www.autoitscript.com/autoit3/docs/functions/Send.htm")
 	$g_bitsDebugOutput = CFGGetInt($CFGKEY_DEBUG_BITS)
 EndFunc
 
 Func InitHotKey()
 #comments-start
 	http://www.autoitscript.com/autoit3/docs/functions/Send.htm
-
-	'!'
-	This tells AutoIt to send an ALT keystroke, therefore Send("This is text!a") would send the keys "This is text" and then press "ALT+a".
-	N.B. Some programs are very choosy about capital letters and ALT keys, i.e. "!A" is different to "!a". The first says ALT+SHIFT+A, the second is ALT+a. If in doubt, use lowercase!
-
-	'+'
-	This tells AutoIt to send a SHIFT keystroke, therefore Send("Hell+o") would send the text "HellO". Send("!+a") would send "ALT+SHIFT+a".
-
-	'^'
-	This tells AutoIt to send a CONTROL keystroke, therefore Send("^!a") would send "CTRL+ALT+a".
-	N.B. Some programs are very choosy about capital letters and CTRL keys, i.e. "^A" is different to "^a". The first says CTRL+SHIFT+A, the second is CTRL+a. If in doubt, use lowercase!
-
-	'#'
-	The hash now sends a Windows keystroke; therefore, Send("#r") would send Win+r which launches the Run dialog box.
+	'!', ALT
+	'+', SHIFT
+	'^', CTRL
+	'#', windows key
 #comments-end
 
 	; Show PuTTY's config dialog and focus on session list.
-	; Tips: Make stored session names with different initial letters, press the letter to quickly focus on session.
 	HotKeySet(CFGSetDefault("HotKey_NewPutty_Global",         "!{F1}"),      "HotKey_NewPutty_Global")
 
 	HotKeySet(CFGSetDefault("HotKey_SwitchToMost",            "^{TAB}"),     "HotKey_SwitchToMost")
 	; Recent queue is not fully used. "Switch to last one" just works well.
 ;~ 	HotKeySet("^+{TAB}",     "HotKey_SwitchToLeast")
-	HotKeySet(CFGSetDefault("HotKey_SwitchToNext",            "^+j"),        "HotKey_SwitchToNext") ; "^+{DOWN}"
-	HotKeySet(CFGSetDefault("HotKey_SwitchToPrev",            "^+k"),        "HotKey_SwitchToPrev") ; "^+{UP}"
+	HotKeySet(CFGSetDefault("HotKey_SwitchToNext",            "^+j"),        "HotKey_SwitchToNext")
+	HotKeySet(CFGSetDefault("HotKey_SwitchToPrev",            "^+k"),        "HotKey_SwitchToPrev")
 	HotKeySet(CFGSetDefault("HotKey_Switch_H",                "^+h"),        "HotKey_Switch_H")
 	HotKeySet(CFGSetDefault("HotKey_Switch_M",                "^+m"),        "HotKey_Switch_M")
 	HotKeySet(CFGSetDefault("HotKey_Switch_L",                "^+l"),        "HotKey_Switch_L")
@@ -188,7 +178,7 @@ Func InitHotKey()
 	HotKeySet(CFGSetDefault("HotKey_SwitchTo_8",              "!8"),         "HotKey_SwitchTo")
 	HotKeySet(CFGSetDefault("HotKey_SwitchTo_9",              "!9"),         "HotKey_SwitchTo")
 
-	HotKeySet(CFGSetDefault("HotKey_SwitchToLastOne_Global",  "!`"),         "HotKey_SwitchToLastOne_Global") ; "^+`"
+	HotKeySet(CFGSetDefault("HotKey_SwitchToLastOne_Global",  "!`"),         "HotKey_SwitchToLastOne_Global")
 	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_1",       "^+1"),        "HotKey_SwitchTo_Global")
 	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_2",       "^+2"),        "HotKey_SwitchTo_Global")
 	HotKeySet(CFGSetDefault("HotKey_SwitchTo_Global_3",       "^+3"),        "HotKey_SwitchTo_Global")
@@ -246,7 +236,8 @@ Func Tray_EventHandler()
 			CFGSet($CFGKEY_POS_Y, 50)
 			Local $pos = WinGetPos($g_hGUI)
 			Local $newHeight = _Iif($pos <> 0, $pos[3], $ASSIST_DEFAULT_HEIGHT)
-			WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), CFGGetInt($CFGKEY_WIDTH), $newHeight)
+			WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), _
+				CFGGetInt($CFGKEY_WIDTH), $newHeight)
 			HotKey_Func_GUI(True)
 			TrayItemSetState($g_idTrayReset, $TRAY_UNCHECKED)
 
@@ -261,7 +252,8 @@ Func Tray_EventHandler()
 EndFunc
 
 Func MainDlg()
-	$g_hGUI = GUICreate($MAIN_TITLE, CFGGetInt($CFGKEY_WIDTH), $ASSIST_DEFAULT_HEIGHT, Default, Default, $WS_SIZEBOX)
+	$g_hGUI = GUICreate($MAIN_TITLE, CFGGetInt($CFGKEY_WIDTH), $ASSIST_DEFAULT_HEIGHT, _
+		Default, Default, $WS_SIZEBOX)
 	Local $aiGUISize = WinGetClientSize($g_hGUI)
 
 	; Crashed in win7 when resizing dialog. It's seems that scroll bar in list and replaced
@@ -273,8 +265,10 @@ Func MainDlg()
 	Local $widthS = 3
 	Local $width = Int(($aiGUISize[0] - $widthS * 2 - 5) / 3)
 	Local $hHelp = GUICtrlCreateButton("Help", 0, $aiGUISize[1] - 20, $width, 20)
-	Local $hEditConfigure = GUICtrlCreateButton("Edit Configure", $width + $widthS, $aiGUISize[1] - 20, $width, 20)
-	Local $hReconfigure = GUICtrlCreateButton("Reconfigure", ($width + $widthS) * 2, $aiGUISize[1] - 20, $width, 20)
+	Local $hEditConfigure = GUICtrlCreateButton("Edit Configure", _
+		$width + $widthS, $aiGUISize[1] - 20, $width, 20)
+	Local $hReconfigure = GUICtrlCreateButton("Reconfigure", _
+		($width + $widthS) * 2, $aiGUISize[1] - 20, $width, 20)
 	GUICtrlSetResizing($g_idListView, $GUI_DOCKBORDERS)
 	GUICtrlSetResizing($hHelp, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
 	GUICtrlSetResizing($hEditConfigure, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
@@ -294,12 +288,14 @@ Func MainDlg()
 
 	Local Const $sCLSID_TaskbarList = "{56FDF344-FD6D-11D0-958A-006097C9A090}"
 	Local Const $sIID_ITaskbarList = "{56FDF342-FD6D-11D0-958A-006097C9A090}"
-	Local Const $sTagITaskbarList = "HrInit hresult(); AddTab hresult(hwnd); DeleteTab hresult(hwnd); ActivateTab hresult(hwnd); SetActiveAlt hresult(hwnd);"
+	Local Const $sTagITaskbarList = "HrInit hresult(); AddTab hresult(hwnd); " & _
+		"DeleteTab hresult(hwnd); ActivateTab hresult(hwnd); SetActiveAlt hresult(hwnd);"
 	$g_oTaskbarList = ObjCreateInterface($sCLSID_TaskbarList, $sIID_ITaskbarList, $sTagITaskbarList)
 	$g_oTaskbarList.HrInit()
 
 	Local $idTimer = _Timer_SetTimer($g_hGUI, CFGGetInt($CFGKEY_REFRESHTIME), "Timer_Refresh")
-	WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), CFGGetInt($CFGKEY_WIDTH), $ASSIST_DEFAULT_HEIGHT)
+	WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), _
+		CFGGetInt($CFGKEY_WIDTH), $ASSIST_DEFAULT_HEIGHT)
 	WinSetOnTop($g_hGUI, "", 1)
 
 	MgrGUIShow(Not CFGGetInt($CFGKEY_HIDEGUI))
@@ -310,9 +306,10 @@ Func MainDlg()
 	While 1
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE
-				; http://www.autoitscript.com/forum/topic/121154-winclose-will-not-kill-another-running-autoit-script/
-				; http://www.autoitscript.com/forum/topic/7823-how-to-stop-esc-from-sending-gui-event-close/
-				; WinClose and WinKill isn't working. Use "$g_bLeaving" to determine whether to quit and ask before quiting.
+; http://www.autoitscript.com/forum/topic/121154-winclose-will-not-kill-another-running-autoit-script/
+; http://www.autoitscript.com/forum/topic/7823-how-to-stop-esc-from-sending-gui-event-close/
+				; WinClose and WinKill isn't working. Use "$g_bLeaving" to
+				; determine whether to quit and ask before quiting.
 				; Opt("GUICloseOnESC", 0)
 				Local $bQuit = True
 				If Not $g_bLeaving Then
@@ -400,7 +397,8 @@ Func ListWindowProc($hWnd, $Msg, $wParam, $lParam)
 							$next = Int((DataGetLength() - 1) / 2)
 					EndSwitch
 					If $next >= 0 Then
-						_GUICtrlListView_SetItemState($g_hListView, $next, $LVIS_FOCUSED + $LVIS_SELECTED, $LVIS_FOCUSED + $LVIS_SELECTED)
+						_GUICtrlListView_SetItemState($g_hListView, $next, _
+							$LVIS_FOCUSED + $LVIS_SELECTED, $LVIS_FOCUSED + $LVIS_SELECTED)
 						Return 0
 					EndIf
 				Case $WM_CHAR
@@ -420,20 +418,21 @@ Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
 	Switch $hWndFrom
 		Case $g_hListView
 			Switch $iCode
-				Case $NM_CLICK ; Sent by a list-view control when the user clicks an item with the left mouse button
+				; Sent by a list-view control when the user clicks an item with the left mouse button
+				Case $NM_CLICK
 					$tInfo = DllStructCreate($tagNMITEMACTIVATE, $ilParam)
 					dbg("$NM_CLICK" & @LF & "--> hWndFrom:" & @TAB & $hWndFrom & @LF & _
-							"-->IDFrom:" & @TAB & $iIDFrom & @LF & _
-							"-->Code:" & @TAB & $iCode & @LF & _
-							"-->Index:" & @TAB & DllStructGetData($tInfo, "Index") & @LF & _
-							"-->SubItem:" & @TAB & DllStructGetData($tInfo, "SubItem") & @LF & _
-							"-->NewState:" & @TAB & DllStructGetData($tInfo, "NewState") & @LF & _
-							"-->OldState:" & @TAB & DllStructGetData($tInfo, "OldState") & @LF & _
-							"-->Changed:" & @TAB & DllStructGetData($tInfo, "Changed") & @LF & _
-							"-->ActionX:" & @TAB & DllStructGetData($tInfo, "ActionX") & @LF & _
-							"-->ActionY:" & @TAB & DllStructGetData($tInfo, "ActionY") & @LF & _
-							"-->lParam:" & @TAB & DllStructGetData($tInfo, "lParam") & @LF & _
-							"-->KeyFlags:" & @TAB & DllStructGetData($tInfo, "KeyFlags"))
+						"-->IDFrom:" & @TAB & $iIDFrom & @LF & _
+						"-->Code:" & @TAB & $iCode & @LF & _
+						"-->Index:" & @TAB & DllStructGetData($tInfo, "Index") & @LF & _
+						"-->SubItem:" & @TAB & DllStructGetData($tInfo, "SubItem") & @LF & _
+						"-->NewState:" & @TAB & DllStructGetData($tInfo, "NewState") & @LF & _
+						"-->OldState:" & @TAB & DllStructGetData($tInfo, "OldState") & @LF & _
+						"-->Changed:" & @TAB & DllStructGetData($tInfo, "Changed") & @LF & _
+						"-->ActionX:" & @TAB & DllStructGetData($tInfo, "ActionX") & @LF & _
+						"-->ActionY:" & @TAB & DllStructGetData($tInfo, "ActionY") & @LF & _
+						"-->lParam:" & @TAB & DllStructGetData($tInfo, "lParam") & @LF & _
+						"-->KeyFlags:" & @TAB & DllStructGetData($tInfo, "KeyFlags"))
 					Local $index = DllStructGetData($tInfo, "Index")
 					If $index >= 0 Then
 						MgrSwitchTo($index)
@@ -443,7 +442,8 @@ Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
 					$g_nDragging = MgrGetCurrent()
 					If @OSVersion = "WIN_7" Then
 						; Not working well in XP
-						Local $hDragImageList = _GUICtrlListView_CreateDragImage($g_hListView, $g_nDragging)
+						Local $hDragImageList = _GUICtrlListView_CreateDragImage($g_hListView, _
+							$g_nDragging)
 						_GUIImageList_BeginDrag($hDragImageList[0], 0, 0, 0)
 					EndIf
 			EndSwitch
@@ -465,7 +465,8 @@ Func WM_MOUSEMOVE($hWndGUI, $MsgID, $wParam, $lParam)
 	If $g_nDragging < 0 Then Return
 	Local $res = _GUICtrlListView_HitTest($g_hListView)
 	If $res[0] >= 0 Then
-		_GUICtrlListView_SetItemState($g_hListView, $res[0], $LVIS_FOCUSED + $LVIS_SELECTED, $LVIS_FOCUSED + $LVIS_SELECTED)
+		_GUICtrlListView_SetItemState($g_hListView, $res[0], _
+			$LVIS_FOCUSED + $LVIS_SELECTED, $LVIS_FOCUSED + $LVIS_SELECTED)
 	EndIf
 	Return $GUI_RUNDEFMSG
 EndFunc
@@ -606,7 +607,7 @@ Func HotKey_Copy()
 		; Activate editor
 		If WinWaitActive($handle, "", 1) <> 0 Then
 			; Send CTRL+V
-			; http://www.autoitscript.com/wiki/FAQ#Why_does_the_Ctrl_key_get_stuck_down_after_I_run_my_script.3F
+; http://www.autoitscript.com/wiki/FAQ#Why_does_the_Ctrl_key_get_stuck_down_after_I_run_my_script.3F
 			While _IsPressed("10") Or _IsPressed("11") Or _IsPressed("12")
 				Sleep(50)
 			WEnd
@@ -686,9 +687,11 @@ Func HotKey_KeySequence()
 		Return
 	EndIf
 	For $i = 1 To $MAX_KEY_SEQUENCE
-		Local $hotkey = CFGGet($CFGKEY_KEY_SEQUENCE_PREFIX & $i & $CFGKEY_KEY_SEQUENCE_SUFFIX_HOTKEY)
+		Local $k = $CFGKEY_KEY_SEQUENCE_PREFIX & $i & $CFGKEY_KEY_SEQUENCE_SUFFIX_HOTKEY
+		Local $hotkey = CFGGet($k)
 		If @HotKeyPressed == $hotkey Then
-			Local $sequence = CFGGet($CFGKEY_KEY_SEQUENCE_PREFIX & $i & $CFGKEY_KEY_SEQUENCE_SUFFIX_SEQUENCE)
+			Local $k = $CFGKEY_KEY_SEQUENCE_PREFIX & $i & $CFGKEY_KEY_SEQUENCE_SUFFIX_SEQUENCE
+			Local $sequence = CFGGet($k)
 			dbg("HotKey_KeySequence()", $hotkey, $sequence)
 			While _IsPressed("10") Or _IsPressed("11") Or _IsPressed("12")
 				Sleep(50)
@@ -958,7 +961,8 @@ Func MgrSwitchTo_original($index)
 EndFunc
 
 Func MgrActivate($index)
-	_GUICtrlListView_SetItemState($g_hListView, $index, $LVIS_FOCUSED + $LVIS_SELECTED, $LVIS_FOCUSED + $LVIS_SELECTED)
+	_GUICtrlListView_SetItemState($g_hListView, $index, _
+		$LVIS_FOCUSED + $LVIS_SELECTED, $LVIS_FOCUSED + $LVIS_SELECTED)
 	If $index >= 0 Then
 		Local $handle = DataGetHandle($index)
 		RQueAddRecent($handle)
@@ -1125,7 +1129,9 @@ Func ListUpdate($hList, $avData)
 	; Resize GUI
 	If $lastRowCount <> $newRowCount Then
 		Local $iRowHeight = _GUICtrlListView_GetItemPositionY($g_hListView, 1)
-		WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), CFGGetInt($CFGKEY_WIDTH), _Max($iRowHeight * $newRowCount + 70, $ASSIST_DEFAULT_HEIGHT))
+		WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), _
+			CFGGetInt($CFGKEY_WIDTH), _Max($iRowHeight * $newRowCount + 70, _
+			$ASSIST_DEFAULT_HEIGHT))
 	EndIf
 EndFunc
 
@@ -1168,7 +1174,8 @@ Func GetAllPuTTYs()
 	Next
 	; Validate below codes to collect more windows
 	If 0 Then
-		$var = WinList("[CLASS:ConsoleWindowClass]") ; cmd.exe, python.exe and more console windows
+		; cmd.exe, python.exe and more console windows
+		$var = WinList("[CLASS:ConsoleWindowClass]")
 		For $i = 1 to $var[0][0]
 			_ArrayAdd($results, $var[$i][1])
 			If Not(CFGGet($CFGKEY_PUTTYPATH)) Then
@@ -1181,8 +1188,10 @@ Func GetAllPuTTYs()
 EndFunc
 
 Func GetModuleFileNameEx($_Pid)
-	Local $_Hwnd = DllCall("Kernel32.dll", "hwnd", "OpenProcess", "dword", 0x0400 + 0x0010, "int", 0, "dword", $_Pid)
-	Local $_Return = DllCall("Psapi.dll", "long", "GetModuleFileNameEx", "hwnd", $_Hwnd[0], "long", 0, "str", 0, "long", 255)
+	Local $_Hwnd = DllCall("Kernel32.dll", "hwnd", "OpenProcess", "dword", _
+		0x0400 + 0x0010, "int", 0, "dword", $_Pid)
+	Local $_Return = DllCall("Psapi.dll", "long", "GetModuleFileNameEx", "hwnd", _
+		$_Hwnd[0], "long", 0, "str", 0, "long", 255)
 	DllCall("Kernel32.dll", "int", "CloseHandle", "hwnd", $_Hwnd[0])
 	If StringInStr($_Return[3], "\") Then Return $_Return[3]
 	Return ""
@@ -1211,8 +1220,10 @@ Func GetChildWindow($hWnd, $sClassName)
 EndFunc
 
 ; see _SendMessage in SendMessage.au3
-Func _PostMessage($hWnd, $iMsg, $wParam = 0, $lParam = 0, $iReturn = 0, $wParamType = "wparam", $lParamType = "lparam", $sReturnType = "lresult")
-	Local $aResult = DllCall("user32.dll", $sReturnType, "PostMessageW", "hwnd", $hWnd, "uint", $iMsg, $wParamType, $wParam, $lParamType, $lParam)
+Func _PostMessage($hWnd, $iMsg, $wParam = 0, $lParam = 0, $iReturn = 0, _
+		$wParamType = "wparam", $lParamType = "lparam", $sReturnType = "lresult")
+	Local $aResult = DllCall("user32.dll", $sReturnType, "PostMessageW", "hwnd", _
+		$hWnd, "uint", $iMsg, $wParamType, $wParam, $lParamType, $lParam)
 	If @error Then Return SetError(@error, @extended, "")
 	If $iReturn >= 0 And $iReturn <= 4 Then Return $aResult[$iReturn]
 	Return $aResult
@@ -1242,7 +1253,8 @@ Func _wndMinAnimation($value = True)
 	DllStructSetData($struct, "iMinAnimate", $value)
 	DllStructSetData($struct, "cbSize", DllStructGetSize($struct))
 
-	Local $aReturn = DllCall('user32.dll', 'int', 'SystemParametersInfo', 'uint', $SPI_SETANIMATION, 'int', DllStructGetSize($struct), _
+	Local $aReturn = DllCall('user32.dll', 'int', 'SystemParametersInfo', _
+		'uint', $SPI_SETANIMATION, 'int', DllStructGetSize($struct), _
 	   'ptr', DllStructGetPtr($struct), 'uint', 0)
 EndFunc   ;==_wndMinAnimation
 
