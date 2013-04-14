@@ -217,4 +217,4 @@ then press the letter to quickly locate it.
   * Reset assist dialog location
   * Quit PuTTYAssist
 * [Some tips about PuTTY](https://gist.github.com/zackz/5381217)
-* [Use NaviAssist to enhance PuTTYAssist](https://github.com/zackz/NaviAssist/wiki/Use-NaviAssist-to-enhance-PuTTYAssist)
+* [Use NaviAssist to enhance PuTTYAssist](https://gist.github.com/zackz/5381235)
