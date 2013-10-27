@@ -26,7 +26,7 @@ https://github.com/zackz/PuTTYAssist
 #include <cfgmgr.au3>
 
 Global Const $NAME = "PuTTY Assist"
-Global Const $VERSION = "0.6.0"
+Global Const $VERSION = "0.6.1"
 Global Const $MAIN_TITLE = $NAME & " " & $VERSION
 Global Const $PAGEURL = "https://github.com/zackz/PuTTYAssist"
 Global Const $PATH_INI = @ScriptDir & "\" & "PuTTYAssist.ini"
@@ -66,6 +66,7 @@ Global $g_bLeaving = False
 Global $g_bRefreshing = False
 Global $g_bSwitching = False
 Global $g_bManuallyHideGUI = False
+Global $g_bInitialized = False
 Global $g_iSwitch_AfterRefreshing = -1
 Global $g_HideTaskbar_AfterRefreshing = 0
 Global $g_avCFG[1][2] = [[0]]
@@ -301,6 +302,7 @@ Func MainDlg()
 	MgrGUIShow(Not CFGGetInt($CFGKEY_HIDEGUI))
 	MgrRefresh()
 	MgrSwitchToCurrent()
+	$g_bInitialized = True
 
 	dbg("Main loop start...")
 	While 1
@@ -933,7 +935,9 @@ Func MgrSwitchToCurrent()
 	If $index >= 0 Then
 		MgrSwitchTo($index)
 	Else
-		HotKey_NewPutty_Global()
+		If $g_bInitialized Then
+			HotKey_NewPutty_Global()
+		EndIf
 	EndIf
 EndFunc
 
