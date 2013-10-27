@@ -749,6 +749,9 @@ EndFunc
 Func HotKey_SwitchTo()
 	Local $indexTo = Int(StringRight(@HotKeyPressed, 1)) - 1
 	HotKey_Func_SwitchTo($indexTo, "HotKey_SwitchTo")
+	If $indexTo >= 0 And $indexTo < DataGetLength() Then
+		MgrGUIAutoHide()
+	EndIf
 EndFunc
 
 Func HotKey_Switch_H()
