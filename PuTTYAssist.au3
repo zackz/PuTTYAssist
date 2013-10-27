@@ -55,6 +55,7 @@ Global $g_idListView
 Global $g_idTrayNew
 Global $g_idTrayReset
 Global $g_idTrayHide
+Global $g_idTrayConfigure
 Global $g_idTrayAbout
 Global $g_idTrayQuit
 Global $g_wListProcOld
@@ -209,6 +210,10 @@ Func InitTray()
 	TrayItemSetOnEvent(-1, "Tray_EventHandler")
 	TrayCreateItem("")
 
+	$g_idTrayConfigure = TrayCreateItem("Show configuration file")
+	TrayItemSetOnEvent(-1, "Tray_EventHandler")
+	TrayCreateItem("")
+
 ;~ 	$g_idTrayHide = TrayCreateItem("Hide assist dialog")
 ;~ 	TrayItemSetOnEvent(-1, "Tray_EventHandler")
 ;~ 	TrayCreateItem("")
@@ -217,6 +222,19 @@ Func InitTray()
 ;~ 	TrayItemSetOnEvent(-1, "Tray_EventHandler")
 	$g_idTrayQuit = TrayCreateItem("Quit")
 	TrayItemSetOnEvent(-1, "Tray_EventHandler")
+EndFunc
+
+Func OpenTxtFile($fn)
+	; Run notepad or other editor
+	Local $cmd = CFGGet($CFGKEY_NOTEPADPATH) & ' "' & $fn & '"'
+	Local $pid = Run($cmd)
+	dbg("OpenTxtFile(), run", $pid, $cmd)
+	If $pid = 0 And CFGGet($CFGKEY_NOTEPADPATH) <> "Notepad.exe" Then
+		; Bad notepad path, retry with notepad
+		Local $cmd = "Notepad.exe" & ' "' & $fn & '"'
+		$pid = Run($cmd)
+		dbg("OpenTxtFile(), retry", $pid, $cmd)
+	EndIf
 EndFunc
 
 Func Tray_EventHandler()
@@ -241,6 +259,21 @@ Func Tray_EventHandler()
 				CFGGetInt($CFGKEY_WIDTH), $newHeight)
 			HotKey_Func_GUI(True)
 			TrayItemSetState($g_idTrayReset, $TRAY_UNCHECKED)
+
+		Case $g_idTrayConfigure
+			; After edit configuration file any other setting changes may cause
+			; configuration writeback. Such as edit ini file then move gui dialog
+			; position.
+			Local $r = MsgBox(0x1041, "Warning!", "Must quit before saving configuration." & @LF & _
+				@LF & _
+				"OK:     Quit PuTTYAssist then edit and save configuration." & @LF & _
+				"Cancel: Just show configuration, don't edit, modification may lose.")
+			If $r = 1 Then
+				$g_bLeaving = True
+				WinClose($g_hGUI)
+			EndIf
+			OpenTxtFile($PATH_INI)
+			TrayItemSetState($g_idTrayConfigure, $TRAY_UNCHECKED)
 
 		Case $g_idTrayAbout
 			ShowAbout()
