@@ -271,6 +271,10 @@ Func Tray_EventHandler()
 				@LF & _
 				"OK:     Quit PuTTYAssist then edit and save configuration." & @LF & _
 				"Cancel: Just show configuration, don't edit, modification may lose.")
+
+			; Write settings back to ini before open it.
+			CFGCachedWriteBack(False)
+
 			If $r = 1 Then
 				$g_bLeaving = True
 				WinClose($g_hGUI)
