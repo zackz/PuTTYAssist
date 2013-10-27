@@ -40,6 +40,7 @@ Global Const $CFGKEY_POS_X = "POS_X"
 Global Const $CFGKEY_POS_Y = "POS_Y"
 Global Const $CFGKEY_PUTTYPATH = "PUTTYPATH"
 Global Const $CFGKEY_NOTEPADPATH = "NOTEPADPATH"
+Global Const $CFGKEY_TXTCOPYTMPPATH = "TXTCOPYTMPPATH"
 Global Const $CFGKEY_HIDEGUI = "HIDEGUI"
 Global Const $CFGKEY_AUTOHIDE = "AUTOHIDE"
 Global Const $CFGKEY_AUTOMAXIMIZE = "AUTOMAXIMIZE"
@@ -130,6 +131,7 @@ Func InitCFG()
 	CFGSetDefault($CFGKEY_POS_Y,         50)
 	CFGSetDefault($CFGKEY_PUTTYPATH,     "")
 	CFGSetDefault($CFGKEY_NOTEPADPATH,   "Notepad.exe") ; "SciTE.exe"
+	CFGSetDefault($CFGKEY_TXTCOPYTMPPATH, "")
 	CFGSetDefault($CFGKEY_HIDEGUI,       0) ; Initial show state of gui(main) window
 	CFGSetDefault($CFGKEY_AUTOHIDE,      1) ; Auto hide other PuTTY window's taskbar
 	CFGSetDefault($CFGKEY_AUTOMAXIMIZE,  1) ; Auto maximize NEW PuTTY window
@@ -235,6 +237,7 @@ Func OpenTxtFile($fn)
 		$pid = Run($cmd)
 		dbg("OpenTxtFile(), retry", $pid, $cmd)
 	EndIf
+	Return $pid
 EndFunc
 
 Func Tray_EventHandler()
@@ -612,41 +615,69 @@ Func HotKey_Paste()
 	EndIf
 EndFunc
 
+Func HotKey_Copy_Func_TmpFile()
+	; Save all results of ctrl+shift+v to $CFGKEY_TXTCOPYTMPPATH
+	; No confirm dialog, and all text has saved in temp directory.
+
+	dbg('HotKey_Copy_Func_TmpFile()', CFGGet($CFGKEY_TXTCOPYTMPPATH))
+	Local $txt = _ClipBoard_GetData($CF_TEXT)
+	dbg("Length of clipboard text", StringLen($txt))
+
+	Local $fn = CFGGet($CFGKEY_TXTCOPYTMPPATH)
+	$fn = StringRegExpReplace($fn, "\\$", "")
+	$fn = $fn & "\tmp_" & @YEAR & @MON & @MDAY & "_" & @HOUR & @MIN & @SEC & ".txt"
+	dbg("Tmp file path", $fn)
+	FileWrite($fn, $txt)
+
+	Local $pid = OpenTxtFile($fn)
+	Local $handle = WaitMainWindow($pid)
+
+	; Set cursor to end of file
+	If WinWaitActive($handle, "", 1) <> 0 Then
+		While _IsPressed("10") Or _IsPressed("11") Or _IsPressed("12")
+			Sleep(50)
+		WEnd
+		Send("^{END}")
+	EndIf
+EndFunc
+
+Func HotKey_Copy_Func_CtrlV()
+	; Open new text editor then ctrl+v. Since context in editor has changed, it
+	; will popup a confirm dialog when leaving. Set TXTCOPYTMPPATH to avoid.
+
+	; Run notepad or other editor
+	Local $pid = Run(CFGGet($CFGKEY_NOTEPADPATH))
+	dbg("HotKey_Copy(), run", $pid, CFGGet($CFGKEY_NOTEPADPATH))
+	If $pid = 0 And CFGGet($CFGKEY_NOTEPADPATH) <> "Notepad.exe" Then
+		; Bad notepad path, retry with notepad
+		$pid = Run("Notepad.exe")
+		dbg("HotKey_Copy(), retry", $pid, CFGGet($CFGKEY_NOTEPADPATH))
+	EndIf
+	If $pid = 0 Then Return
+
+	Local $handle = WaitMainWindow($pid)
+
+	; Activate editor
+	If WinWaitActive($handle, "", 1) <> 0 Then
+		; Send CTRL+V
+; http://www.autoitscript.com/wiki/FAQ#Why_does_the_Ctrl_key_get_stuck_down_after_I_run_my_script.3F
+		While _IsPressed("10") Or _IsPressed("11") Or _IsPressed("12")
+			Sleep(50)
+		WEnd
+		Send("^v")
+	EndIf
+EndFunc
+
 Func HotKey_Copy()
 	Local $index = MgrGetActive()
 	If $index >= 0 Then
 		; Copy all to clipboard
 		_SendMessage(DataGetHandle($index), $WM_SYSCOMMAND, 0x0170, 0x0)
 
-		; Run notepad or other editor
-		Local $pid = Run(CFGGet($CFGKEY_NOTEPADPATH))
-		dbg("HotKey_Copy(), run", $pid, CFGGet($CFGKEY_NOTEPADPATH))
-		If $pid = 0 And CFGGet($CFGKEY_NOTEPADPATH) <> "Notepad.exe" Then
-			; Bad notepad path, retry with notepad
-			$pid = Run("Notepad.exe")
-			dbg("HotKey_Copy(), retry", $pid, CFGGet($CFGKEY_NOTEPADPATH))
-		EndIf
-		If $pid = 0 Then Return
-
-		; Wait main window and get handle
-		Local $handle = 0
-		For $i = 1 To 20
-			$handle = GetProcessMainWindow($pid)
-			If $handle <> 0 Then ExitLoop
-			Sleep(50)
-			dbg("HotKey_Copy(), try to get main window's handle", $i)
-		Next
-		dbg("HotKey_Copy(), main window", $handle)
-		If $handle = 0 Then Return
-
-		; Activate editor
-		If WinWaitActive($handle, "", 1) <> 0 Then
-			; Send CTRL+V
-; http://www.autoitscript.com/wiki/FAQ#Why_does_the_Ctrl_key_get_stuck_down_after_I_run_my_script.3F
-			While _IsPressed("10") Or _IsPressed("11") Or _IsPressed("12")
-				Sleep(50)
-			WEnd
-			Send("^v")
+		If CFGGet($CFGKEY_TXTCOPYTMPPATH) Then
+			HotKey_Copy_Func_TmpFile()
+		Else
+			HotKey_Copy_Func_CtrlV()
 		EndIf
 	Else
 		HotKey_Func_PassAlong(@HotKeyPressed, "HotKey_Copy")
@@ -1265,6 +1296,18 @@ Func GetChildWindow($hWnd, $sClassName)
 		$hChild = _WinAPI_GetWindow($hChild, $GW_HWNDNEXT)
 	WEnd
 	Return 0
+EndFunc
+
+Func WaitMainWindow($pid)
+	; Wait main window and get handle
+	Local $handle = 0
+	For $i = 1 To 20
+		$handle = GetProcessMainWindow($pid)
+		If $handle <> 0 Then ExitLoop
+		Sleep(50)
+		dbg("WaitMainWindow(), try to get main window's handle", $i)
+	Next
+	Return $handle
 EndFunc
 
 ; see _SendMessage in SendMessage.au3
