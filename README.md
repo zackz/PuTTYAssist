@@ -54,7 +54,8 @@ AUTOHIDE=1
 AUTOMAXIMIZE=1
 ```
 
-Initial state of main window. 1 is preferred. Use ```ALT + ` ``` to show/hide this window.
+Initial state of main window. 1 is preferred, main window automatically hides after selected.
+(Use ```ALT + ` ``` to show/hide.)
 
 
 ```ini
@@ -115,7 +116,11 @@ HotKey_Paste=^v
 ```ini
 HotKey_Copy=^+c
 NOTEPADPATH=Notepad.exe
+TXTCOPYTMPPATH=
 ```
+
+If TXTCOPYTMPPATH is not empty then save copied context to temporary file in TXTCOPYTMPPATH
+and open it in NOTEPADPATH.
 
 `CTRL + SHIFT + T`: Duplicate session
 
