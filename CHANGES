@@ -1,6 +1,12 @@
 Changes
 =======
 
+* 0.6.1
+Add tray command 'Open configuration file'
+Save copied text to temp directory, TXTCOPYTMPPATH
+No longer show putty configuration dialog during startup.
+Hide gui after ALT+N pressed in HIDEGUI=1 mode
+
 * 0.6.0
 Adjust GUI behavior when HIDEGUI=1
 Remove HotKey_GUI_Global
