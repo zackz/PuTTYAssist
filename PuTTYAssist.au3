@@ -26,7 +26,7 @@ https://github.com/zackz/PuTTYAssist
 #include <cfgmgr.au3>
 
 Global Const $NAME = "PuTTY Assist"
-Global Const $VERSION = "0.6.1"
+Global Const $VERSION = "0.6.2"
 Global Const $MAIN_TITLE = $NAME & " " & $VERSION
 Global Const $PAGEURL = "https://github.com/zackz/PuTTYAssist"
 Global Const $PATH_INI = @ScriptDir & "\" & "PuTTYAssist.ini"
@@ -151,6 +151,8 @@ Func InitHotKey()
 	'#', windows key
 #comments-end
 
+	; Show/Hide assist window.
+	HotKeySet(CFGSetDefault("HotKey_GUI_Global",              "^`"),         "HotKey_GUI_Global")
 	; Show PuTTY's config dialog and focus on session list.
 	HotKeySet(CFGSetDefault("HotKey_NewPutty_Global",         "!{F1}"),      "HotKey_NewPutty_Global")
 
