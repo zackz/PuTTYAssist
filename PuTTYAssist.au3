@@ -34,6 +34,7 @@ Global Const $SECTION_NAME = "PROPERTIES"
 Global Const $TITLE_PUTTYCONFIGBOX = "[CLASS:PuTTYConfigBox]"
 Global Const $ASSIST_DEFAULT_HEIGHT = 100
 Global Const $MAX_KEY_SEQUENCE = 30
+Global Const $MAX_CLR = 30
 
 Global Const $CFGKEY_WIDTH = "WIDTH"
 Global Const $CFGKEY_POS_X = "POS_X"
@@ -46,9 +47,15 @@ Global Const $CFGKEY_AUTOHIDE = "AUTOHIDE"
 Global Const $CFGKEY_AUTOMAXIMIZE = "AUTOMAXIMIZE"
 Global Const $CFGKEY_REFRESHTIME = "REFRESHTIME"
 Global Const $CFGKEY_DEBUG_BITS = "DEBUG_BITS"
+Global Const $CFGKEY_CLR_BG = "CLR_BG"
+
 Global Const $CFGKEY_KEY_SEQUENCE_PREFIX = "KEYSEQ"
 Global Const $CFGKEY_KEY_SEQUENCE_SUFFIX_HOTKEY = "_HOTKEY"
 Global Const $CFGKEY_KEY_SEQUENCE_SUFFIX_SEQUENCE = "_SEQUENCE"
+Global Const $CFGKEY_CLR_PREFIX = "CLR"
+Global Const $CFGKEY_CLR_SUFFIX_REGEX = "_REGEX"
+Global Const $CFGKEY_CLR_SUFFIX_FG = "_FG"
+Global Const $CFGKEY_CLR_SUFFIX_BG = "_BG"
 
 Global $g_hGUI
 Global $g_hListView
@@ -137,6 +144,7 @@ Func InitCFG()
 	CFGSetDefault($CFGKEY_AUTOMAXIMIZE,  1) ; Auto maximize NEW PuTTY window
 	CFGSetDefault($CFGKEY_REFRESHTIME,   150)
 	CFGSetDefault($CFGKEY_DEBUG_BITS,    0)
+	CFGSetDefault($CFGKEY_CLR_BG,        $CLR_MONEYGREEN)
 	CFGSetDefault("HOTKEY_NOTES",        "ALT[!], SHIFT[+], CTRL[^], WINKEY[#], " & _
 		"Details in http://www.autoitscript.com/autoit3/docs/functions/Send.htm")
 	$g_bitsDebugOutput = CFGGetInt($CFGKEY_DEBUG_BITS)
@@ -202,6 +210,41 @@ Func InitHotKey()
 		EndIf
 	Next
 
+EndFunc
+
+Global Const $CFGKEY_CLR_PREFIX = "CLR"
+Global Const $CFGKEY_CLR_SUFFIX_REGEX = "_REGEX"
+Global Const $CFGKEY_CLR_SUFFIX_FG = "_FG"
+Global Const $CFGKEY_CLR_SUFFIX_BG = "_BG"
+
+Func ListUpdate($hList, $avData)
+	Local $lastRowCount = _GUICtrlListView_GetItemCount($g_hListView)
+	Local $newRowCount = UBound($avData)
+	_GUICtrlListView_DeleteAllItems($hList)
+	For $i = 0 To UBound($avData) - 1
+		Local $text = ListGetTitle(DataGetTitle($i), $i)
+		GUICtrlCreateListViewItem($text, $g_idListView)
+		For $i = 1 To $MAX_KEY_SEQUENCE
+			Local $reg = CFGGet($CFGKEY_CLR_PREFIX & $i & $CFGKEY_CLR_SUFFIX_REGEX)
+			If Not($reg) Then ContinueLoop
+			Local $found = StringRegExp($text, $reg)
+			If $found Then
+				Local $fg = CFGGet($CFGKEY_CLR_PREFIX & $i & $CFGKEY_CLR_SUFFIX_FG)
+				If $fg Then GUICtrlSetColor(-1, $fg)
+				Local $bg = CFGGet($CFGKEY_CLR_PREFIX & $i & $CFGKEY_CLR_SUFFIX_BG)
+				If $bg Then GUICtrlSetBkColor(-1, $bg)
+				ExitLoop
+			EndIf
+		Next
+	Next
+
+	; Resize GUI
+	If $lastRowCount <> $newRowCount Then
+		Local $iRowHeight = _GUICtrlListView_GetItemPositionY($g_hListView, 1)
+		WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), _
+			CFGGetInt($CFGKEY_WIDTH), _Max($iRowHeight * $newRowCount + 70, _
+			$ASSIST_DEFAULT_HEIGHT))
+	EndIf
 EndFunc
 
 Func InitTray()
@@ -317,13 +360,16 @@ Func MainDlg()
 	GUICtrlSetResizing($hEditConfigure, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
 	GUICtrlSetResizing($hReconfigure, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
 
-	$style = BitOR($LVS_EX_GRIDLINES, $LVS_EX_FULLROWSELECT, $WS_EX_CLIENTEDGE, $LVS_EX_BORDERSELECT)
+	$style = BitOR($LVS_EX_FULLROWSELECT, $WS_EX_CLIENTEDGE, $LVS_EX_BORDERSELECT)
+	$style = BitOR($style, $LVS_EX_GRIDLINES)
 	_GUICtrlListView_SetExtendedListViewStyle($g_hListView, $style)
-	_GUICtrlListView_SetBkColor($g_hListView, $CLR_MONEYGREEN)
+	_GUICtrlListView_SetBkColor($g_hListView, CFGGet($CFGKEY_CLR_BG))
 	_GUICtrlListView_SetTextColor($g_hListView, $CLR_BLACK)
-	_GUICtrlListView_SetTextBkColor($g_hListView, $CLR_MONEYGREEN)
+	_GUICtrlListView_SetTextBkColor($g_hListView, CFGGet($CFGKEY_CLR_BG))
 	_GUICtrlListView_SetOutlineColor($g_hListView, $CLR_BLACK)
 	_GUICtrlListView_AddColumn($g_hListView, "ColumnOne", CFGGetInt($CFGKEY_WIDTH) - 23)
+
+	DllCall("UxTheme.dll", "int", "SetWindowTheme", "hwnd", $g_hListView, "wstr", "Explorer", "ptr", 0)
 
 	; Reciving keyboard messages in listview
 	Local $wProcHandle = DllCallbackRegister("ListWindowProc", "int", "hwnd;uint;wparam;lparam")
@@ -448,6 +494,9 @@ Func ListWindowProc($hWnd, $Msg, $wParam, $lParam)
 				Case $WM_CHAR
 					; Avoid beep
 					Return 0
+				Case $WM_SETFOCUS
+					; Hide focus
+					_SendMessage($g_hListView, $WM_UPDATEUISTATE, 0x10001, 0)
 			EndSwitch
 	EndSwitch
 	Return _WinAPI_CallWindowProc($g_wListProcOld, $hWnd, $Msg, $wParam, $lParam)
@@ -1207,10 +1256,25 @@ Func ListUpdate($hList, $avData)
 	Local $lastRowCount = _GUICtrlListView_GetItemCount($g_hListView)
 	Local $newRowCount = UBound($avData)
 	_GUICtrlListView_DeleteAllItems($hList)
+
+	; Add list items with colors
 	For $i = 0 To UBound($avData) - 1
 		Local $text = ListGetTitle(DataGetTitle($i), $i)
-		_GUICtrlListView_AddItem($hList, $text)
+		GUICtrlCreateListViewItem($text, $g_idListView)
+		For $j = 1 To $MAX_CLR
+			Local $regex = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_REGEX)
+			If Not($regex) Then ContinueLoop
+			Local $found = StringRegExp($text, $regex)
+			If Not($found) Then ContinueLoop
+			; Set colors
+			Local $fg = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_FG)
+			If $fg Then GUICtrlSetColor(-1, $fg)
+			Local $bg = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_BG)
+			If $bg Then GUICtrlSetBkColor(-1, $bg)
+			ExitLoop
+		Next
 	Next
+
 	; Resize GUI
 	If $lastRowCount <> $newRowCount Then
 		Local $iRowHeight = _GUICtrlListView_GetItemPositionY($g_hListView, 1)
@@ -1221,14 +1285,22 @@ Func ListUpdate($hList, $avData)
 EndFunc
 
 Func ListUpdateNames($hList, $avData)
-	For $i = 0 To UBound($avData) - 1
-		Local $text = ListGetTitle(DataGetTitle($i), $i)
-		Local $textOld = _GUICtrlListView_GetItemText($hList, $i)
-		If Not($text = $textOld) then
-			_GUICtrlListView_SetItem($hList, $text, $i)
-			dbg("New item text:", $text, $textOld, "<<")
-		EndIf
-	Next
+	Local $changed = False
+	If _GUICtrlListView_GetItemCount($hList) == UBound($avData) Then
+		For $i = 0 To UBound($avData) - 1
+			Local $text = ListGetTitle(DataGetTitle($i), $i)
+			Local $textOld = _GUICtrlListView_GetItemText($hList, $i)
+			If Not($text = $textOld) Then
+				$changed = True
+				ExitLoop
+			EndIf
+		Next
+	Else
+		$changed = True
+	EndIf
+	If $changed Then
+		ListUpdate($hList, $avData)
+	EndIf
 EndFunc
 
 Func dbg($v1="", $v2="", $v3="", $v4="", $v5="")
