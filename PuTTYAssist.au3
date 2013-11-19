@@ -212,41 +212,6 @@ Func InitHotKey()
 
 EndFunc
 
-Global Const $CFGKEY_CLR_PREFIX = "CLR"
-Global Const $CFGKEY_CLR_SUFFIX_REGEX = "_REGEX"
-Global Const $CFGKEY_CLR_SUFFIX_FG = "_FG"
-Global Const $CFGKEY_CLR_SUFFIX_BG = "_BG"
-
-Func ListUpdate($hList, $avData)
-	Local $lastRowCount = _GUICtrlListView_GetItemCount($g_hListView)
-	Local $newRowCount = UBound($avData)
-	_GUICtrlListView_DeleteAllItems($hList)
-	For $i = 0 To UBound($avData) - 1
-		Local $text = ListGetTitle(DataGetTitle($i), $i)
-		GUICtrlCreateListViewItem($text, $g_idListView)
-		For $i = 1 To $MAX_KEY_SEQUENCE
-			Local $reg = CFGGet($CFGKEY_CLR_PREFIX & $i & $CFGKEY_CLR_SUFFIX_REGEX)
-			If Not($reg) Then ContinueLoop
-			Local $found = StringRegExp($text, $reg)
-			If $found Then
-				Local $fg = CFGGet($CFGKEY_CLR_PREFIX & $i & $CFGKEY_CLR_SUFFIX_FG)
-				If $fg Then GUICtrlSetColor(-1, $fg)
-				Local $bg = CFGGet($CFGKEY_CLR_PREFIX & $i & $CFGKEY_CLR_SUFFIX_BG)
-				If $bg Then GUICtrlSetBkColor(-1, $bg)
-				ExitLoop
-			EndIf
-		Next
-	Next
-
-	; Resize GUI
-	If $lastRowCount <> $newRowCount Then
-		Local $iRowHeight = _GUICtrlListView_GetItemPositionY($g_hListView, 1)
-		WinMove($g_hGUI, "", CFGGetInt($CFGKEY_POS_X), CFGGetInt($CFGKEY_POS_Y), _
-			CFGGetInt($CFGKEY_WIDTH), _Max($iRowHeight * $newRowCount + 70, _
-			$ASSIST_DEFAULT_HEIGHT))
-	EndIf
-EndFunc
-
 Func InitTray()
 	TraySetOnEvent($TRAY_EVENT_PRIMARYUP, "MgrSwitchToCurrent")
 	TraySetClick(16)
@@ -351,13 +316,13 @@ Func MainDlg()
 	Local $widthS = 3
 	Local $width = Int(($aiGUISize[0] - $widthS * 2 - 5) / 3)
 	Local $hHelp = GUICtrlCreateButton("Help", 0, $aiGUISize[1] - 20, $width, 20)
-	Local $hEditConfigure = GUICtrlCreateButton("Edit Configure", _
+	Local $hEditConfiguration = GUICtrlCreateButton("Edit Configuration", _
 		$width + $widthS, $aiGUISize[1] - 20, $width, 20)
 	Local $hReconfigure = GUICtrlCreateButton("Reconfigure", _
 		($width + $widthS) * 2, $aiGUISize[1] - 20, $width, 20)
 	GUICtrlSetResizing($g_idListView, $GUI_DOCKBORDERS)
 	GUICtrlSetResizing($hHelp, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
-	GUICtrlSetResizing($hEditConfigure, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
+	GUICtrlSetResizing($hEditConfiguration, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
 	GUICtrlSetResizing($hReconfigure, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
 
 	$style = BitOR($LVS_EX_FULLROWSELECT, $WS_EX_CLIENTEDGE, $LVS_EX_BORDERSELECT)
@@ -418,9 +383,9 @@ Func MainDlg()
 				EndIf
 			Case $hHelp
 				ShowAbout()
-			Case $hEditConfigure
+			Case $hEditConfiguration
 				CFGCachedWriteBack(False)
-				ShellExecute($PATH_INI)
+				OpenTxtFile($PATH_INI)
 			Case $hReconfigure
 				TraySetIcon("blank")
 				CFGCachedWriteBack(False)
