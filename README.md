@@ -223,7 +223,7 @@ CLR_BG2=0XB5D3B5
 
 Set colors of lines which texts (title of putty window) match regular expressions CLR[N]_REGEX.
 
-```int
+```ini
 CLR3_REGEX=^[^:]*@severX
 CLR3_FG=0x0000FF
 CLR3_BG=
