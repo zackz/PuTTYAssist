@@ -47,7 +47,8 @@ Global Const $CFGKEY_AUTOHIDE = "AUTOHIDE"
 Global Const $CFGKEY_AUTOMAXIMIZE = "AUTOMAXIMIZE"
 Global Const $CFGKEY_REFRESHTIME = "REFRESHTIME"
 Global Const $CFGKEY_DEBUG_BITS = "DEBUG_BITS"
-Global Const $CFGKEY_CLR_BG = "CLR_BG"
+Global Const $CFGKEY_CLR_BG1 = "CLR_BG1"
+Global Const $CFGKEY_CLR_BG2 = "CLR_BG2"
 
 Global Const $CFGKEY_KEY_SEQUENCE_PREFIX = "KEYSEQ"
 Global Const $CFGKEY_KEY_SEQUENCE_SUFFIX_HOTKEY = "_HOTKEY"
@@ -144,7 +145,8 @@ Func InitCFG()
 	CFGSetDefault($CFGKEY_AUTOMAXIMIZE,  1) ; Auto maximize NEW PuTTY window
 	CFGSetDefault($CFGKEY_REFRESHTIME,   150)
 	CFGSetDefault($CFGKEY_DEBUG_BITS,    0)
-	CFGSetDefault($CFGKEY_CLR_BG,        $CLR_MONEYGREEN)
+	CFGSetDefault($CFGKEY_CLR_BG1,       0xC0DCC0) ; Odd rows
+	CFGSetDefault($CFGKEY_CLR_BG2,       0XB5D3B5) ; Even rows
 	CFGSetDefault("HOTKEY_NOTES",        "ALT[!], SHIFT[+], CTRL[^], WINKEY[#], " & _
 		"Details in http://www.autoitscript.com/autoit3/docs/functions/Send.htm")
 	$g_bitsDebugOutput = CFGGetInt($CFGKEY_DEBUG_BITS)
@@ -326,11 +328,11 @@ Func MainDlg()
 	GUICtrlSetResizing($hReconfigure, BitOR($GUI_DOCKHEIGHT, $GUI_DOCKHCENTER, $GUI_DOCKBOTTOM))
 
 	$style = BitOR($LVS_EX_FULLROWSELECT, $WS_EX_CLIENTEDGE, $LVS_EX_BORDERSELECT)
-	$style = BitOR($style, $LVS_EX_GRIDLINES)
+;~ 	$style = BitOR($style, $LVS_EX_GRIDLINES)
 	_GUICtrlListView_SetExtendedListViewStyle($g_hListView, $style)
-	_GUICtrlListView_SetBkColor($g_hListView, CFGGet($CFGKEY_CLR_BG))
+	_GUICtrlListView_SetBkColor($g_hListView, ToCOLORREF(CFGGet($CFGKEY_CLR_BG1)))
 	_GUICtrlListView_SetTextColor($g_hListView, $CLR_BLACK)
-	_GUICtrlListView_SetTextBkColor($g_hListView, CFGGet($CFGKEY_CLR_BG))
+	_GUICtrlListView_SetTextBkColor($g_hListView, ToCOLORREF(CFGGet($CFGKEY_CLR_BG1)))
 	_GUICtrlListView_SetOutlineColor($g_hListView, $CLR_BLACK)
 	_GUICtrlListView_AddColumn($g_hListView, "ColumnOne", CFGGetInt($CFGKEY_WIDTH) - 23)
 
@@ -504,6 +506,36 @@ Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
 							$g_nDragging)
 						_GUIImageList_BeginDrag($hDragImageList[0], 0, 0, 0)
 					EndIf
+				Case $NM_CUSTOMDRAW
+					Local $tCustDraw = DllStructCreate($tagNMLVCUSTOMDRAW, $ilParam)
+					Local $nDrawStage = DllStructGetData($tCustDraw, 'dwDrawStage')
+					Switch $nDrawStage
+						Case $CDDS_PREPAINT
+							Return $CDRF_NOTIFYITEMDRAW
+						Case $CDDS_ITEMPREPAINT
+							Local $nItem = DllStructGetData($tCustDraw, 'dwItemSpec')
+							; Default
+							DllStructSetData($tCustDraw, 'clrText', ToCOLORREF(0xFB0000))
+							If Mod($nItem, 2) Then
+								DllStructSetData($tCustDraw, 'clrTextBk', ToCOLORREF(CFGGet($CFGKEY_CLR_BG2)))
+							Else
+								DllStructSetData($tCustDraw, 'clrTextBk', ToCOLORREF(CFGGet($CFGKEY_CLR_BG1)))
+							EndIf
+							; Colors from ini
+							Local $text = ListGetTitle(DataGetTitle($nItem), $nItem)
+							For $j = 1 To $MAX_CLR
+								Local $regex = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_REGEX)
+								If Not($regex) Then ContinueLoop
+								Local $found = StringRegExp($text, $regex)
+								If Not($found) Then ContinueLoop
+								Local $fg = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_FG)
+								If $fg Then DllStructSetData($tCustDraw, 'clrText', ToCOLORREF($fg))
+								Local $bg = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_BG)
+								If $bg Then DllStructSetData($tCustDraw, 'clrTextBk', ToCOLORREF($bg))
+								ExitLoop
+							Next
+							Return $CDRF_NEWFONT
+					EndSwitch
 			EndSwitch
 	EndSwitch
 	Return $GUI_RUNDEFMSG
@@ -1226,18 +1258,6 @@ Func ListUpdate($hList, $avData)
 	For $i = 0 To UBound($avData) - 1
 		Local $text = ListGetTitle(DataGetTitle($i), $i)
 		GUICtrlCreateListViewItem($text, $g_idListView)
-		For $j = 1 To $MAX_CLR
-			Local $regex = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_REGEX)
-			If Not($regex) Then ContinueLoop
-			Local $found = StringRegExp($text, $regex)
-			If Not($found) Then ContinueLoop
-			; Set colors
-			Local $fg = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_FG)
-			If $fg Then GUICtrlSetColor(-1, $fg)
-			Local $bg = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_BG)
-			If $bg Then GUICtrlSetBkColor(-1, $bg)
-			ExitLoop
-		Next
 	Next
 
 	; Resize GUI
@@ -1393,3 +1413,9 @@ Func _wndMinAnimation($value = True)
 EndFunc   ;==_wndMinAnimation
 
 #endregion - _wndMinAnimation
+
+Func ToCOLORREF($nColor)
+	return BitAND(BitShift($nColor, 16), 0x000000FF) + _
+		BitAND($nColor, 0x0000FF00) + _
+		BitAND(BitShift($nColor, -16), 0x00FF0000)
+EndFunc
