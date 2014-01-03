@@ -210,6 +210,29 @@ KEYSEQ5_HOTKEY=!+5
 KEYSEQ5_SEQUENCE=. <(wget -qO- http://192.168.1.2/env.sh){ENTER}
 ```
 
+### Colors
+
+Background color.
+
+```ini
+; Odd rows
+CLR_BG1=0xC0DCC0
+; Even rows
+CLR_BG2=0XB5D3B5
+```
+
+Set colors of lines which texts (title of putty window) match regular expressions CLR[N]_REGEX.
+
+```int
+CLR3_REGEX=^[^:]*@severX
+CLR3_FG=0x0000FF
+CLR3_BG=
+
+CLR12_REGEX=^[^:]*test
+CLR12_FG=0x00BB00
+CLR12_BG=
+```
+
 Tips
 ----
 
