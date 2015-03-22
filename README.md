@@ -189,7 +189,8 @@ KEYSEQ1_HOTKEY=!+1
 KEYSEQ1_SEQUENCE=^lifconfig{ENTER}
 
 ; HotKey is ALT + SHIFT + 2
-; This key sequence is for vim which add two options: number and hlsearch and set color scheme.
+; This key sequence is for vim which add two options: number and hlsearch and
+; set color scheme.
 KEYSEQ2_HOTKEY=!+2
 KEYSEQ2_SEQUENCE=:set number hlsearch{ENTER}:color delek{ENTER}
 
