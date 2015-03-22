@@ -184,7 +184,7 @@ Send key sequence to PuTTY window.
 
 ```ini
 ; HotKey is ALT + SHIFT + 1
-; Effect is clear screen and run ifconfig
+; Clear screen and run ifconfig
 KEYSEQ1_HOTKEY=!+1
 KEYSEQ1_SEQUENCE=^lifconfig{ENTER}
 
@@ -194,10 +194,9 @@ KEYSEQ2_HOTKEY=!+2
 KEYSEQ2_SEQUENCE=:set number hlsearch{ENTER}:color delek{ENTER}
 
 ; HotKey is ALT + SHIFT + 3
-; This key sequence is for vim or less which highlight valid lines except comments.
-; Original sequence is "/^[^#^;].*". But "^" is shortcut for "CTRL", so replaced with "{^}"
+; Connect adb from PuTTY.
 KEYSEQ3_HOTKEY=!+3
-KEYSEQ3_SEQUENCE=/{^}[{^}{#}{^};].*{ENTER}
+KEYSEQ3_SEQUENCE=0012host:transport-usb0006shell:{ENTER}
 
 ; HotKey is ALT + SHIFT + 4
 ; Automatically enter password
@@ -212,9 +211,10 @@ KEYSEQ5_SEQUENCE=. <(wget -qO- http://192.168.1.2/env.sh){ENTER}
 
 ### Colors
 
-Background color.
+Set default foreground and background colors.
 
 ```ini
+CLR_FG=0x00A0D0
 ; Odd rows
 CLR_BG1=0xC0DCC0
 ; Even rows
