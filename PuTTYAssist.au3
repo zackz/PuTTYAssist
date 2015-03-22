@@ -471,6 +471,39 @@ Func ListWindowProc($hWnd, $Msg, $wParam, $lParam)
 	Return _WinAPI_CallWindowProc($g_wListProcOld, $hWnd, $Msg, $wParam, $lParam)
 EndFunc
 
+Func WM_NOTIFY_LIST_CUSTOMDRAW($ilParam)
+	Local $tCustDraw = DllStructCreate($tagNMLVCUSTOMDRAW, $ilParam)
+	Local $nDrawStage = DllStructGetData($tCustDraw, 'dwDrawStage')
+	Switch $nDrawStage
+		Case $CDDS_PREPAINT
+			Return $CDRF_NOTIFYITEMDRAW
+		Case $CDDS_ITEMPREPAINT
+			Local $nItem = DllStructGetData($tCustDraw, 'dwItemSpec')
+			; Default
+			DllStructSetData($tCustDraw, 'clrText', ToCOLORREF(CFGGet($CFGKEY_CLR_FG)))
+			If Mod($nItem, 2) Then
+				DllStructSetData($tCustDraw, 'clrTextBk', ToCOLORREF(CFGGet($CFGKEY_CLR_BG2)))
+			Else
+				DllStructSetData($tCustDraw, 'clrTextBk', ToCOLORREF(CFGGet($CFGKEY_CLR_BG1)))
+			EndIf
+			; Colors from ini
+			Local $text = ListGetTitle(DataGetTitle($nItem), $nItem)
+			For $j = 1 To $MAX_CLR
+				Local $regex = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_REGEX)
+				If Not($regex) Then ContinueLoop
+				Local $found = StringRegExp($text, $regex)
+				If Not($found) Then ContinueLoop
+				Local $fg = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_FG)
+				If $fg Then DllStructSetData($tCustDraw, 'clrText', ToCOLORREF($fg))
+				Local $bg = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_BG)
+				If $bg Then DllStructSetData($tCustDraw, 'clrTextBk', ToCOLORREF($bg))
+				ExitLoop
+			Next
+			Return $CDRF_NEWFONT
+	EndSwitch
+	return $GUI_RUNDEFMSG
+EndFunc
+
 Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
 	Local $hWndFrom, $iIDFrom, $iCode, $tNMHDR, $tInfo
 	$tNMHDR = DllStructCreate($tagNMHDR, $ilParam)
@@ -509,35 +542,7 @@ Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
 						_GUIImageList_BeginDrag($hDragImageList[0], 0, 0, 0)
 					EndIf
 				Case $NM_CUSTOMDRAW
-					Local $tCustDraw = DllStructCreate($tagNMLVCUSTOMDRAW, $ilParam)
-					Local $nDrawStage = DllStructGetData($tCustDraw, 'dwDrawStage')
-					Switch $nDrawStage
-						Case $CDDS_PREPAINT
-							Return $CDRF_NOTIFYITEMDRAW
-						Case $CDDS_ITEMPREPAINT
-							Local $nItem = DllStructGetData($tCustDraw, 'dwItemSpec')
-							; Default
-							DllStructSetData($tCustDraw, 'clrText', ToCOLORREF(CFGGet($CFGKEY_CLR_FG)))
-							If Mod($nItem, 2) Then
-								DllStructSetData($tCustDraw, 'clrTextBk', ToCOLORREF(CFGGet($CFGKEY_CLR_BG2)))
-							Else
-								DllStructSetData($tCustDraw, 'clrTextBk', ToCOLORREF(CFGGet($CFGKEY_CLR_BG1)))
-							EndIf
-							; Colors from ini
-							Local $text = ListGetTitle(DataGetTitle($nItem), $nItem)
-							For $j = 1 To $MAX_CLR
-								Local $regex = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_REGEX)
-								If Not($regex) Then ContinueLoop
-								Local $found = StringRegExp($text, $regex)
-								If Not($found) Then ContinueLoop
-								Local $fg = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_FG)
-								If $fg Then DllStructSetData($tCustDraw, 'clrText', ToCOLORREF($fg))
-								Local $bg = CFGGet($CFGKEY_CLR_PREFIX & $j & $CFGKEY_CLR_SUFFIX_BG)
-								If $bg Then DllStructSetData($tCustDraw, 'clrTextBk', ToCOLORREF($bg))
-								ExitLoop
-							Next
-							Return $CDRF_NEWFONT
-					EndSwitch
+					return WM_NOTIFY_LIST_CUSTOMDRAW($ilParam)
 			EndSwitch
 	EndSwitch
 	Return $GUI_RUNDEFMSG
