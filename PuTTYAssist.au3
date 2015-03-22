@@ -47,6 +47,7 @@ Global Const $CFGKEY_AUTOHIDE = "AUTOHIDE"
 Global Const $CFGKEY_AUTOMAXIMIZE = "AUTOMAXIMIZE"
 Global Const $CFGKEY_REFRESHTIME = "REFRESHTIME"
 Global Const $CFGKEY_DEBUG_BITS = "DEBUG_BITS"
+Global Const $CFGKEY_CLR_FG = "CLR_FG"
 Global Const $CFGKEY_CLR_BG1 = "CLR_BG1"
 Global Const $CFGKEY_CLR_BG2 = "CLR_BG2"
 
@@ -145,8 +146,9 @@ Func InitCFG()
 	CFGSetDefault($CFGKEY_AUTOMAXIMIZE,  1) ; Auto maximize NEW PuTTY window
 	CFGSetDefault($CFGKEY_REFRESHTIME,   150)
 	CFGSetDefault($CFGKEY_DEBUG_BITS,    0)
-	CFGSetDefault($CFGKEY_CLR_BG1,       0xC0DCC0) ; Odd rows
-	CFGSetDefault($CFGKEY_CLR_BG2,       0XB5D3B5) ; Even rows
+	CFGSetDefault($CFGKEY_CLR_FG,        "0x00A0D0")
+	CFGSetDefault($CFGKEY_CLR_BG1,       "0xC0DCC0") ; Odd rows
+	CFGSetDefault($CFGKEY_CLR_BG2,       "0XB5D3B5") ; Even rows
 	CFGSetDefault("HOTKEY_NOTES",        "ALT[!], SHIFT[+], CTRL[^], WINKEY[#], " & _
 		"Details in http://www.autoitscript.com/autoit3/docs/functions/Send.htm")
 	$g_bitsDebugOutput = CFGGetInt($CFGKEY_DEBUG_BITS)
@@ -515,7 +517,7 @@ Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
 						Case $CDDS_ITEMPREPAINT
 							Local $nItem = DllStructGetData($tCustDraw, 'dwItemSpec')
 							; Default
-							DllStructSetData($tCustDraw, 'clrText', ToCOLORREF(0xFB0000))
+							DllStructSetData($tCustDraw, 'clrText', ToCOLORREF(CFGGet($CFGKEY_CLR_FG)))
 							If Mod($nItem, 2) Then
 								DllStructSetData($tCustDraw, 'clrTextBk', ToCOLORREF(CFGGet($CFGKEY_CLR_BG2)))
 							Else
